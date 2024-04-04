@@ -3,7 +3,7 @@ package sim.neuralnet;
 public class LinearFunctionNeuron extends ActivationFunctionNeuron
 {
     @Override
-    protected int applyActivationFunction(int input)
+    public int applyActivationFunction(int input)
     {
         return 0;
     }

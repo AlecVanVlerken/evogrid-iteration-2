@@ -4,49 +4,49 @@ package sim.neuralnet;
 public class HorizontalOrientationSensorNeuron  extends OrientationSensorNeuron
 {
     @Override
-    protected int north()
+    public int north()
     {
         return 0;
     }
 
     @Override
-    protected int northEast()
+    public int northEast()
     {
         return 0;
     }
 
     @Override
-    protected int east()
+    public int east()
     {
         return 0;
     }
 
     @Override
-    protected int southEast()
+    public int southEast()
     {
         return 0;
     }
 
     @Override
-    protected int south()
+    public int south()
     {
         return 0;
     }
 
     @Override
-    protected int southWest()
+    public int southWest()
     {
         return 0;
     }
 
     @Override
-    protected int west()
+    public int west()
     {
         return 0;
     }
 
     @Override
-    protected int northWest()
+    public int northWest()
     {
         return 0;
     }

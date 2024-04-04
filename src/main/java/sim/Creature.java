@@ -133,7 +133,8 @@ public class Creature
     }
     
     /**
-     * true iff same position and orient and chromosome
+     * true iff same position and orient and chromosome and behavior type
+     * The getClass method can be used to retrieve the runtime type of an object.
      * 
      * @inspects | other
      */
@@ -141,7 +142,8 @@ public class Creature
     	return (other != null) &&
     			(this.position.equals(other.getPosition()))
     			&& (this.orientation.isEqual(other.getOrientation()))
-    			&& (this.getChromosome().isEqual(other.getChromosome()));
+    			&& (this.getChromosome().isEqual(other.getChromosome()))
+    			&& (this.getBehavior().getClass() == other.getBehavior().getClass());
     }
     
     /**

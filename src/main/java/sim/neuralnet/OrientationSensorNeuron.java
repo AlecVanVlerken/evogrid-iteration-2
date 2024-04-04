@@ -49,19 +49,19 @@ public abstract class OrientationSensorNeuron extends SensorNeuron
         }
     }
 
-    protected abstract int north();
+    public abstract int north();
 
-    protected abstract int northEast();
+    public abstract int northEast();
 
-    protected abstract int east();
+    public abstract int east();
 
-    protected abstract int southEast();
+    public abstract int southEast();
 
-    protected abstract int south();
+    public abstract int south();
 
-    protected abstract int southWest();
+    public abstract int southWest();
 
-    protected abstract int west();
+    public abstract int west();
 
-    protected abstract int northWest();
+    public abstract int northWest();
 }

@@ -111,7 +111,7 @@ public class Chromosome
     
     /**
      * @pre | other != null
-     * @pre | 0 <= index || index <= Constants.CHROM_SIZE
+     * @pre | 0 <= index && index <= Constants.CHROM_SIZE
      * @inspects | other
      * @post | result == IntStream.range(0, index).allMatch(i -> getGene(i) == other.getGene(i))
      */
@@ -122,7 +122,7 @@ public class Chromosome
     
     /**
      * @pre | other != null
-     * @pre | 0 <= index || index <= Constants.CHROM_SIZE
+     * @pre | 0 <= index && index <= Constants.CHROM_SIZE
      * @inspects | other
      * @post | result == IntStream.range(index, Constants.CHROM_SIZE).allMatch(i -> getGene(i) == other.getGene(i))
      */

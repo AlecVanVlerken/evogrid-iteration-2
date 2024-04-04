@@ -15,7 +15,7 @@ public class FreePassageSensorNeuron extends BinarySensorNeuron
     }
 
     @Override
-    protected boolean detect(World world, Creature creature)
+    public boolean detect(World world, Creature creature)
     {
     	return false;
     }

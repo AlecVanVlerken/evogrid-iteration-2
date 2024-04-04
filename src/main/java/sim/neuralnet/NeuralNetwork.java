@@ -59,7 +59,12 @@ public class NeuralNetwork
 
     public ActivationFunctionNeuron[] getOutputNeurons()
     {
-        return null; //same order than field
+        return null;
+        //please use this specific order (different than the order of the fields above):
+        // - moveForwardNeuron
+        // - turnCounterclockwiseNeuron
+        // - turnClockwiseNeuron
+        
     }
 
     public ActivationFunctionNeuron getMoveForwardNeuron() { return this.moveForwardNeuron; }

@@ -12,5 +12,5 @@ public abstract class BinarySensorNeuron extends SensorNeuron
         return 0;
     }
 
-    protected abstract boolean detect(World world, Creature creature);
+    public abstract boolean detect(World world, Creature creature);
 }
