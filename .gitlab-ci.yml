@@ -1,0 +1,3 @@
+include:
+  - project: 'distrinet/education/ogp/meta/ci-resources'
+    file: 'scripts/2023-2024/iter2.yml'
