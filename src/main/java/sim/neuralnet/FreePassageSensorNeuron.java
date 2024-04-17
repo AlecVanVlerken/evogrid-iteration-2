@@ -24,7 +24,7 @@ public class FreePassageSensorNeuron extends BinarySensorNeuron
     	} else if (orientation.isEqual(Orientation.northEast())) {
     		dummy_creature.turnClockwise();
     	}
-    	
+
 		if (world.isFree(dummy_creature.getPosition().move(dummy_creature.getOrientation().toVector()))) {
 			return true;
 		} else {

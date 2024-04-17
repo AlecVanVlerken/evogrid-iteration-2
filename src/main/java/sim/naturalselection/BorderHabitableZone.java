@@ -17,7 +17,7 @@ public class BorderHabitableZone implements NaturalSelection
     @Override
     public boolean survives(World world, Point position)
     {
-        if (world.isInside(position) && (borderSize > position.getX() || position.getX() > world.getWidth() - borderSize || borderSize > position.getY() || position.getY() > world.getHeight() - borderSize)) {
+        if ((borderSize > position.getX() || position.getX() > world.getWidth() - borderSize || borderSize > position.getY() || position.getY() > world.getHeight() - borderSize)) {
         	return true;
         }
     	return false;

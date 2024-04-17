@@ -42,7 +42,7 @@ public class World
 
     public Creature[] getPopulation()
     {
-        return population;
+        return this.population;
     }
 
 
@@ -98,7 +98,7 @@ public class World
             return false;
         }
 
-        return !Arrays.stream(this.population).anyMatch(c -> c.getPosition() == position) ;
+        return !Arrays.stream(this.population).anyMatch(c -> c.getPosition().equals(position)) ;
     }
 
     /**
