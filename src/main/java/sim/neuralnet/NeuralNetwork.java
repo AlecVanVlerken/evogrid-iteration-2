@@ -1,9 +1,11 @@
 package sim.neuralnet;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import sim.Chromosome;
 import util.Orientation;
+import util.Pair;
 
 /**
  * Output neurons depend at least on all input neurons, if they depend on something.
@@ -59,7 +61,13 @@ public class NeuralNetwork
 
     public ActivationFunctionNeuron[] getOutputNeurons()
     {
-        return null;
+    	ActivationFunctionNeuron[] outputLayerNeurons = new ActivationFunctionNeuron[] {
+    			this.moveForwardNeuron,
+    			this.turnCounterclockwiseNeuron,
+    			this.turnClockwiseNeuron
+    	};
+    		
+        return outputLayerNeurons;
         //please use this specific order (different than the order of the fields above):
         // - moveForwardNeuron
         // - turnCounterclockwiseNeuron
@@ -84,7 +92,28 @@ public class NeuralNetwork
      */
     public static NeuralNetwork fromChromosome(Chromosome chromosome)
     {
-        return null;
+    	NeuralNetwork neuralNetwork = new NeuralNetwork();
+    	
+    	ActivationFunctionNeuron[] outputNeurons = neuralNetwork.getOutputNeurons();
+
+    	int index_plus = 0;
+        for (ActivationFunctionNeuron neuron : outputNeurons) {
+        	
+            ArrayList<Pair<Neuron, Integer>> dependencies = new ArrayList<>();
+            
+            for (int i = 0; i < 7; i++) {
+                int weight = chromosome.getGene(i + index_plus);
+                dependencies.add(new Pair<>(neuralNetwork.getInputNeurons()[i], weight));
+            }
+
+            neuron.setDependencies(dependencies);
+
+            int bias = chromosome.getGene((index_plus/7)+21);
+            neuron.setBias(bias);
+            index_plus += 7;
+        }
+
+        return neuralNetwork;
     }
 
 

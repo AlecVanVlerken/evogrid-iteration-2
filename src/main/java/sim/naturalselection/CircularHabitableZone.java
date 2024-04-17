@@ -20,6 +20,9 @@ public class CircularHabitableZone implements NaturalSelection
     @Override
     public boolean survives(World world, Point position)
     {
+    	if (world.isInside(position) && center.distanceSquared(position) <= radiusSquared) {
+    		return true;
+    	}
         return false;
     }
 }

@@ -15,12 +15,12 @@ public abstract class Behavior
 	
 	public Behavior(Chromosome chromosome)
 	{
-		this.chromosome = null;
+		this.chromosome = chromosome;
 	}
 	
 	public Chromosome getChromosome()
 	{
-		return null;
+		return this.chromosome;
 	}
 		
     public abstract void applyBehavior(World world, Creature creature);

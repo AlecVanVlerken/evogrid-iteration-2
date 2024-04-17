@@ -5,7 +5,7 @@ public class LinearFunctionNeuron extends ActivationFunctionNeuron
     @Override
     public int applyActivationFunction(int input)
     {
-        return 0;
+    	return Math.min(Math.max(-1000, input), 1000);
     }
     
     

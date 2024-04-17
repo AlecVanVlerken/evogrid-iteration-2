@@ -17,13 +17,18 @@ public class ImmobileBehavior extends Behavior
 		super(chromosome);
 	}
 	
+	
+	@Override
+	public Color getColor() {
+		return Color.WHITE;
+	}
+	
+	
     @Override
     public void applyBehavior(World world, Creature creature)
     {
         // NOP
     }
-    
-
     
 
     @Override

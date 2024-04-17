@@ -21,19 +21,32 @@ public class NeuralNetworkBehavior extends Behavior	{
     public NeuralNetworkBehavior(Chromosome chromosome)
     {
     	super(chromosome);
-        this.neuralNetwork = null;
+        this.neuralNetwork = NeuralNetwork.fromChromosome(chromosome);
     }
+    
+    
+    @Override
+	public Color getColor() {
+		return Color.GREEN;
+	}
+    
 
     @Override
     public void applyBehavior(World world, Creature creature)
     {
-        processForwardMovement(world, creature);
-        processTurning(world, creature);
+    	if (!world.isLimPos(creature.getPosition())) {
+    		processForwardMovement(world, creature);
+    		processTurning(world, creature);
+    	}
     }
 
     private void processForwardMovement(World world, Creature creature)
     {
+    	int forwardVal = neuralNetwork.getMoveForwardNeuron().computeOutput(world, creature);
     	
+    	if (forwardVal > 0) {
+    		creature.moveForward(world, new Vector(0, 0));
+    	}
         
     }
 

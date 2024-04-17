@@ -17,6 +17,9 @@ public class Disjunction implements NaturalSelection
 	
 	public boolean survives(World world, Point position)
 	{
+		if (area1.survives(world, position) || area2.survives(world, position)) {
+			return true;
+		}
 		return false;
 	}
 }

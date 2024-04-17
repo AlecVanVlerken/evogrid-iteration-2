@@ -42,7 +42,7 @@ public class World
 
     public Creature[] getPopulation()
     {
-        return null;
+        return population;
     }
 
 
@@ -109,6 +109,9 @@ public class World
      */
     public void step()
     {
-    	
+    	for (int i = 0 ; i < population.length ; i ++)
+        {
+            population[i].performAction(this);
+        }
     }
 }

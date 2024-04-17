@@ -48,13 +48,13 @@ public abstract class ActivationFunctionNeuron implements Neuron
     {
     	
     	if (dependencies.size() == 7) {
-    		dependencies.remove(6);
-    		dependencies.add(new Pair<Neuron, Integer>(dependency , weight));
-    		return true;
+    		return false;
+    	} else {
+    		var p = new Pair<Neuron, Integer>(dependency, weight);
+        	dependencies.add(p);
+        	return true;
     	}
-    	var p = new Pair<Neuron, Integer>(dependency, weight);
-    	dependencies.add(p);
-    	return true;
+    	
 
     }
 
@@ -70,7 +70,12 @@ public abstract class ActivationFunctionNeuron implements Neuron
     @Override
     public int computeOutput(World world, Creature creature)
     {
-    	return 0;
+    	int total = 0;
+    	for (Pair<Neuron, Integer> pair : this.getDependencies()) {
+    		total += (pair.getFirst().computeOutput(world, creature) * pair.getSecond())/1000;
+	    }
+    	total += this.getBias();
+    	return this.applyActivationFunction(total);
     }
 
     public abstract int applyActivationFunction(int input);

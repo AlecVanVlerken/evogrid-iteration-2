@@ -2,11 +2,13 @@ package simpleui;
 
 import sim.Constants;
 import sim.Simulation;
+import sim.naturalselection.BorderHabitableZone;
 import sim.naturalselection.CircularHabitableZone;
 import sim.naturalselection.Disjunction;
 import sim.naturalselection.NaturalSelection;
 import sim.naturalselection.SouthEastHabitableZone;
 import util.Point;
+import util.RandomUtil;
 
 
 /**
@@ -26,7 +28,8 @@ public class MainSim
 	
     public static void main(String[] args)
     {
-
+    	RandomUtil.seed(1234);
+    	
 
     	NaturalSelection nsel = eastCircle();
 

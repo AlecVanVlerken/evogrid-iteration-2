@@ -8,13 +8,13 @@ public class VerticalOrientationSensorNeuron extends OrientationSensorNeuron
     @Override
     public int north()
     {
-        return 0;
+        return -1000;
     }
 
     @Override
     public int northEast()
     {
-        return 0;
+        return -500;
     }
 
     @Override
@@ -26,19 +26,19 @@ public class VerticalOrientationSensorNeuron extends OrientationSensorNeuron
     @Override
     public int southEast()
     {
-        return 0;
+        return 500;
     }
 
     @Override
     public int south()
     {
-        return 0;
+        return 1000;
     }
 
     @Override
     public int southWest()
     {
-        return 0;
+        return 500;
     }
 
     @Override
@@ -50,6 +50,6 @@ public class VerticalOrientationSensorNeuron extends OrientationSensorNeuron
     @Override
     public int northWest()
     {
-        return 0;
+        return -500;
     }
 }

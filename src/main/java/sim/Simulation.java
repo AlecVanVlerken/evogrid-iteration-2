@@ -8,6 +8,7 @@ import sim.behaviors.Behavior;
 import sim.behaviors.NeuralNetworkBehavior;
 import sim.naturalselection.NaturalSelection;
 import util.Orientation;
+import util.Pair;
 import util.Point;
 import util.RandomUtil;
 
@@ -95,8 +96,10 @@ public class Simulation
      */
     public static World createInitWorldNeuralnets(int size, int popuSize) {
     	Behavior[] behaviors = new Behavior[popuSize];
+    	//Behavior[] chooseFrom = {new NeuralNetworkBehavior(Chromosome.createRandom()), new ImmobileBehavior(Chromosome.createRandom()), new BehaviorA(Chromosome.createRandom()), new Behavior(Chromosome.createRandom())};
     	for (int i = 0 ; i < popuSize ; i++) {
     		behaviors[i] = new NeuralNetworkBehavior(Chromosome.createRandom());
+    		//behaviors[i] = new NeuralNetworkBehavior(Chromosome.createRandom());
     	}
     	return createRandWorldWith(size, popuSize, behaviors);
     }
@@ -117,14 +120,41 @@ public class Simulation
     	
     	ArrayList<Creature> surv = survivingCreatures();
     	
-
+    	if (surv.size() == 0) {
+    		world = createInitWorldNeuralnets(world.getWidth(), populationSize);
+    	} else {
+    		
+    	
+	    	ArrayList<Chromosome> parentGeneration = new ArrayList<>();
+	    	
+	    	for (Creature creature : surv) {
+	    		parentGeneration.add(creature.getChromosome());
+	    	}
+	    	Chromosome[] offsprings = computeOffspringWithSize(parentGeneration, populationSize);
+	
+	    	Behavior[] behaviors = new Behavior[populationSize];
+	    	
+	    	for (int i = 0; i < populationSize; i++) {
+	            behaviors[i] = surv.get(i % surv.size()).getBehavior().copyWithChromosome(offsprings[i]);
+	        }
+	    	
+	    	world = createRandWorldWith(world.getWidth(), populationSize, behaviors);
+    	}
     }
 
     /**
      * The list of creatures that survive, according to `nsel : NaturalSelection` field
      */
     private ArrayList<Creature> survivingCreatures() {
-    	return null;
+    	
+    	ArrayList<Creature> surv = new ArrayList<>();
+    	
+    	for (Creature creature: world.getPopulation()) {
+            if (nsel.survives(world, creature.getPosition())) {
+            	surv.add(creature);
+            }
+        }
+    	return surv;
     }
     
 

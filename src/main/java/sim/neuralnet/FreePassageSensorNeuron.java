@@ -11,12 +11,24 @@ public class FreePassageSensorNeuron extends BinarySensorNeuron
 
     public FreePassageSensorNeuron(Orientation orientation)
     {
-        this.orientation = null;
+        this.orientation = orientation;
     }
 
     @Override
     public boolean detect(World world, Creature creature)
     {
-    	return false;
+    	Creature dummy_creature = creature.giveCopy();
+    	
+    	if (orientation.isEqual(Orientation.northWest())) {
+    		dummy_creature.turnCounterclockwise();
+    	} else if (orientation.isEqual(Orientation.northEast())) {
+    		dummy_creature.turnClockwise();
+    	}
+    	
+		if (world.isFree(dummy_creature.getPosition().move(dummy_creature.getOrientation().toVector()))) {
+			return true;
+		} else {
+			return false;
+		}
     }
 }
