@@ -10,6 +10,8 @@ import util.Pair;
 /**
  * Output neurons depend at least on all input neurons, if they depend on something.
  * All Neuron fields are freely accessible by the client.
+ * 
+ * @immutable
  */
 public class NeuralNetwork
 {
@@ -21,16 +23,29 @@ public class NeuralNetwork
     private final SensorNeuron[] inputLayerNeurons;
 
 
-
+    /**
+	 * @invar | moveForwardNeuron != null
+	 */
     private final ActivationFunctionNeuron moveForwardNeuron;
 
+    /**
+	 * @invar | turnClockwiseNeuron != null
+	 */
     private final ActivationFunctionNeuron turnClockwiseNeuron;
     
+    /**
+	 * @invar | turnCounterclockwiseNeuron != null
+	 */
     private final ActivationFunctionNeuron turnCounterclockwiseNeuron;
 
     /**
      * Returns a NeuralNetwork with 7 input neurons and 3 output neurons, as described in assignment,
      * but with no connections.
+     * @post | getInputNeurons().length == 7
+     * @post | Arrays.stream(getInputNeurons()).allMatch(neuron -> neuron != null)
+     * @post | getMoveForwardNeuron() != null
+     * @post | getTurnClockwiseNeuron() != null
+     * @post | getTurnCounterclockwiseNeuron() != null
      */
     public NeuralNetwork()
     {
@@ -53,12 +68,19 @@ public class NeuralNetwork
     }
 
 
-
+    /**
+     * @post | result.length == 7
+     * @post | Arrays.stream(result).allMatch(neuron -> neuron != null)
+     */
 	public SensorNeuron[] getInputNeurons()
     {
         return inputLayerNeurons;
     }
 
+	/**
+     * @post | result.length == 3
+     * @post | Arrays.stream(result).allMatch(neuron -> neuron != null)
+     */
     public ActivationFunctionNeuron[] getOutputNeurons()
     {
     	ActivationFunctionNeuron[] outputLayerNeurons = new ActivationFunctionNeuron[] {
@@ -75,10 +97,19 @@ public class NeuralNetwork
         
     }
 
+    /**
+     * @post | result != null
+     */
     public ActivationFunctionNeuron getMoveForwardNeuron() { return this.moveForwardNeuron; }
 
+    /**
+     * @post | result != null
+     */
     public ActivationFunctionNeuron getTurnClockwiseNeuron() { return this.turnClockwiseNeuron; }
 
+    /**
+     * @post | result != null
+     */
     public ActivationFunctionNeuron getTurnCounterclockwiseNeuron() { return this.turnCounterclockwiseNeuron; }
 
     /**

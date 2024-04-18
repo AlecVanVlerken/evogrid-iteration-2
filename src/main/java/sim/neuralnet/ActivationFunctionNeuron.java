@@ -4,6 +4,8 @@ import util.Pair;
 
 import java.util.ArrayList;
 
+import sim.Constants;
+
 import sim.Creature;
 import sim.World;
 
@@ -16,17 +18,27 @@ public abstract class ActivationFunctionNeuron implements Neuron
 	 * @representationObject
 	 * @representationObjects
 	 * 
+	 * @invar | dependencies != null
+	 *
 	 */
     private ArrayList<Pair<Neuron, Integer>> dependencies;
 
+    /**
+	 * @invar | bias >= Constants.GENE_MIN && bias <= Constants.GENE_MAX
+	 */
     private int bias;
 
+    /**
+     * @post | result != null
+     */
     public ArrayList<Pair<Neuron, Integer>> getDependencies() {
     	return dependencies;
     }
     
     /**
-     * pre: deps has correct length
+     * @pre | deps.size() == 7
+     * @pre | deps.stream().allMatch(pair -> pair != null)
+     * @post | this.getDependencies() == deps
      */
     public void setDependencies(ArrayList<Pair<Neuron, Integer>> deps) {
     	dependencies = deps;
@@ -34,6 +46,9 @@ public abstract class ActivationFunctionNeuron implements Neuron
 
     /**
      * Initializes with getBias = 0 and getDependencies is empty
+     * 
+     * @post | getDependencies().isEmpty()
+     * @post | getBias() == 0
      */
     public ActivationFunctionNeuron()
     {
@@ -58,11 +73,18 @@ public abstract class ActivationFunctionNeuron implements Neuron
 
     }
 
+    /**
+     * @pre | bias >= Constants.GENE_MIN && bias <= Constants.GENE_MAX
+     * @post | this.getBias() == bias
+     */
     public void setBias(int bias)
     {
         this.bias = bias;
     }
     
+    /**
+     * @post | result >= Constants.GENE_MIN && result <= Constants.GENE_MAX
+     */
     public int getBias() {
     	return bias;
     }
@@ -78,5 +100,10 @@ public abstract class ActivationFunctionNeuron implements Neuron
     	return this.applyActivationFunction(total);
     }
 
+    /**
+     * It takes its parameter and clamps it to a specific interval.
+     * 
+     * @pre | input >= Integer.MIN_VALUE && input <= Integer.MAX_VALUE
+     */
     public abstract int applyActivationFunction(int input);
 }

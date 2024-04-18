@@ -1,8 +1,18 @@
 package sim.neuralnet;
 
+/**
+ * @immutable
+ */
 public class LinearFunctionNeuron extends ActivationFunctionNeuron
 {
     @Override
+    /**
+     * It takes its parameter and clamps it to the interval [-1000, 1000].
+     * 
+     * @pre | input >= Integer.MIN_VALUE && input <= Integer.MAX_VALUE
+     * @post | result <= 1000 && result >= -1000
+
+     */
     public int applyActivationFunction(int input)
     {
     	return Math.min(Math.max(-1000, input), 1000);

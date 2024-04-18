@@ -10,11 +10,17 @@ import static util.Logic.*;
 
 /**
  * @immutable
- * @invar | getColor() .equals( Color.BLUE )
+ * @invar | getColor().equals( Color.BLUE )
  *
  */
 public class BehaviorB extends Behavior
 {
+	/**
+     * Initializes a new BehaviorB object.
+     *
+     * @throws IllegalArgumentException | chromosome == null
+     * @post | this.getChromosome() == chromosome
+     */
 	public BehaviorB(Chromosome chromosome)
 	{
 		super(chromosome);
@@ -22,11 +28,16 @@ public class BehaviorB extends Behavior
 
 	
 	@Override
+	/**
+	 * @post | result != null
+	 */
 	public Color getColor() {
 		return Color.BLUE;
 	}
 	
 	/**
+	 * Applies the specific Behavior of the given Creature in the given the given world.
+	 * 
 	 * @inspects | world
 	 * @mutates | creature
 	 * @pre | world != null
@@ -57,6 +68,11 @@ public class BehaviorB extends Behavior
 	
 
 	@Override
+	/**
+     * @creates | result
+     * @pre | chromosome != null
+     * @post | result.getChromosome() == chromosome
+     */
 	public BehaviorB copyWithChromosome(Chromosome chromosome)
     {
     	return new BehaviorB(chromosome);

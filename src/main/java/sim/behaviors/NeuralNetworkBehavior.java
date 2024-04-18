@@ -9,7 +9,8 @@ import util.Vector;
 
 
 /**
- * @invar | getColor() .equals( Color.GREEN )
+ * @immutable
+ * @invar | getColor().equals( Color.GREEN )
  */
 public class NeuralNetworkBehavior extends Behavior	{
 	/**
@@ -18,6 +19,15 @@ public class NeuralNetworkBehavior extends Behavior	{
 	 */
     private final NeuralNetwork neuralNetwork;
 
+    /**
+     * Initializes a new NeuralNetworkBehavior object.
+     * @inspects | chromosome
+     * @throws IllegalArgumentException | chromosome == null
+     * @post | this.getChromosome() == chromosome
+     * @post | this.getNeuralNetwork() != null
+     * @post | this.getNeuralNetwork().getInputNeurons() != null
+     * @post | this.getNeuralNetwork().getOutputNeurons() != null
+     */
     public NeuralNetworkBehavior(Chromosome chromosome)
     {
     	super(chromosome);
@@ -26,12 +36,29 @@ public class NeuralNetworkBehavior extends Behavior	{
     
     
     @Override
+    /**
+	 * @post | result != null
+	 */
 	public Color getColor() {
 		return Color.GREEN;
 	}
     
+    /**
+	 * @post | result != null
+	 */
+	public NeuralNetwork getNeuralNetwork() {
+		return this.neuralNetwork;
+	}    
 
     @Override
+    /**
+     * Applies the specific Behavior of the given Creature in the given the given world.
+     * 
+	 * @inspects | world
+	 * @mutates | creature
+	 * @pre | world != null
+	 * @pre | creature != null
+	 */
     public void applyBehavior(World world, Creature creature)
     {
     	if (!world.isLimPos(creature.getPosition())) {
@@ -70,6 +97,12 @@ public class NeuralNetworkBehavior extends Behavior	{
 
 
 	@Override
+	/**
+     * @creates | result
+     * @inspects | chromosome
+     * @pre | chromosome != null
+     * @post | result.getChromosome() == chromosome
+     */
 	public NeuralNetworkBehavior copyWithChromosome(Chromosome chromosome)
 	{
 		return new NeuralNetworkBehavior(chromosome);

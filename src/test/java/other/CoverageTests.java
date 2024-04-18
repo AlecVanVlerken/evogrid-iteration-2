@@ -2,6 +2,7 @@ package other;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -108,6 +109,12 @@ class CoverageTests {
 		}
 		
 		@Test
+		public void getters()
+		{				
+			assertEquals(10, zone.getBorderSize());
+		}
+		
+		@Test
 		public void survivesFalse()
 		{				
 			assertFalse(zone.survives(world, new Point(25, 25)));
@@ -134,12 +141,21 @@ class CoverageTests {
 		
 		CircularHabitableZone zone;
 		World world;
+		Point point;
 		
 		@BeforeEach
 		void setup() {
 			Creature[] creature = {new Creature(new BehaviorA(Chromosome.createRandom()), new Point(1,1), Orientation.north())};
 			world = new World(50, 50, creature);
-			zone = new CircularHabitableZone(new Point(25,25), 5);
+			point = new Point(25,25);
+			zone = new CircularHabitableZone(point, 5);
+		}
+		
+		@Test
+		public void getters()
+		{				
+			assertEquals(point, zone.getCenter());
+			assertEquals(25, zone.getRadiusSquared());
 		}
 		
 		@Test
@@ -147,7 +163,6 @@ class CoverageTests {
 		{				
 			assertFalse(zone.survives(world, new Point(0, 0)));
 			assertFalse(zone.survives(world, new Point(49, 49)));
-			assertFalse(zone.survives(world, new Point(100, 100)));
 		}
 		
 		@Test
@@ -179,7 +194,7 @@ class CoverageTests {
 		@Test
 		public void survivesFalse()
 		{				
-			assertFalse(zone.survives(world, new Point(1, 1)));
+			assertFalse(zone.survives(world, new Point(2, 2)));
 		}
 		
 		@Test
@@ -207,6 +222,13 @@ class CoverageTests {
 			zone1 = new CircularHabitableZone(new Point(25,25), 5);
 			zone2 = new BorderHabitableZone(10);
 			zone = new Disjunction(zone1, zone2);
+		}
+		
+		@Test
+		public void getters()
+		{				
+			assertEquals(zone1, zone.getArea1());
+			assertEquals(zone2, zone.getArea2());
 		}
 		
 		@Test
@@ -340,6 +362,7 @@ class CoverageTests {
 		NeuralNetworkBehavior behavior;
 		World world;
 		Chromosome chrom;
+		NeuralNetwork neuralNetwork;
 		
 		@BeforeEach
 		void setup() {
@@ -347,11 +370,13 @@ class CoverageTests {
 			world = new World(50, 50, creature);
 			chrom = Chromosome.createRandom();
 			behavior = new NeuralNetworkBehavior(chrom);
+			neuralNetwork = NeuralNetwork.fromChromosome(chrom);
 		}
 		
 		@Test
-		public void getColor()
-		{				
+		public void getters()
+		{	
+			assertNotEquals(null, behavior.getNeuralNetwork());
 			assertEquals(Color.GREEN, behavior.getColor());
 		}
 		
@@ -489,7 +514,15 @@ class CoverageTests {
 	@Nested
 	class FreePassageSensorNeuronTests
 	{
-
+		
+		@Test
+		public void getters()
+		{				
+			FreePassageSensorNeuron neuron = new FreePassageSensorNeuron(Orientation.north());
+			
+			assertEquals(Orientation.north(), neuron.getOrientation());
+		}
+		
 		@Test
 		public void detectNorth()
 		{				
@@ -580,7 +613,9 @@ class CoverageTests {
 			assertEquals(10, neuron.getBias());
 			
 			ArrayList<Pair<Neuron, Integer>> dependencies =	new ArrayList<>();
-			dependencies.add(new Pair<>(neuron, 500));
+			for (int i = 0; i < 7; i++) {
+				dependencies.add(new Pair<>(neuron, 500));
+				}
 			neuron.setDependencies(dependencies);
 			assertEquals(dependencies, neuron.getDependencies());
 		}
@@ -599,15 +634,13 @@ class CoverageTests {
 				}
 			}
 
+			assertTrue(neuron.connect(neuron, 400));
+			assertFalse(dependenciesFull.equals(neuron.getDependencies()));
+			
 			neuron.setDependencies(dependenciesFull);
 			
 			assertFalse(neuron.connect(neuron, 500));
 			assertEquals(dependenciesFull, neuron.getDependencies());
-			
-			neuron.setDependencies(dependenciesAlmost);
-			assertTrue(neuron.connect(neuron, 400));
-			assertFalse(dependenciesFull.equals(neuron.getDependencies()));
-			
 		}
 	}
 	
@@ -667,6 +700,7 @@ class CoverageTests {
      		
 			assertFalse(chrom1.isEqual(chrom3));
 			assertFalse(chrom3.isEqual(chrom1));
+			assertFalse(chrom3.isEqual(null));
 		}
 		
 		@Test

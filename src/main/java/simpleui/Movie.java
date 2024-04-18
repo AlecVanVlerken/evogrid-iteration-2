@@ -20,17 +20,29 @@ public class Movie extends JComponent {
     /**
      * bfiRenderer is an aux object drawing 2x2-pixel squares on bufferedImage
      * bfiRenderer uses the same scale than world
+     * 
+	 * @invar | bfiRenderer != null
+	 * @invar | bufferedImage != null
      * @invar | bfiRenderer.getWidth() * 2 == bufferedImage.getWidth()
      * @invar | bfiRenderer.getHeight() * 2 == bufferedImage.getHeight()
      * @invar | bfiRenderer.getWidth() == sim.getWorld().getWidth() && bfiRenderer.getHeight() == sim.getWorld().getHeight()
      */
     private final BufferedImage bufferedImage;
     private final BufferedImageRenderer bfiRenderer;
-
+    
+    /**
+	 * @invar | timer != null
+	 */
     private final FrameRateTimer timer;
-
+    
+    /**
+	 * @invar | chronometer != null
+	 */
     private final Chronometer chronometer;
     
+    /**
+	 * @invar | sim != null
+	 */
     private final Simulation sim;
 
     /**
@@ -122,6 +134,7 @@ public class Movie extends JComponent {
     
     /**
      * Draws survival zone and creatures on bufferedImage
+     * @mutates | this
      */
     private void renderSurvivalAndCreatures() {
     	this.bfiRenderer.clearPixels(bufferedImage);

@@ -13,23 +13,34 @@ import sim.World;
 
 /**
  * @immutable
- * @invar | getColor() .equals( Color.RED)
+ * @invar | getColor().equals( Color.RED)
  *
  */
 public class BehaviorA extends Behavior
 {
+	/**
+     * Initializes a new BehaviorA object.
+     *
+     * @throws IllegalArgumentException | chromosome == null
+     * @post | this.getChromosome() == chromosome
+     */
 	public BehaviorA(Chromosome chromosome)
 	{
 		super(chromosome);
 	}
 	
 	@Override
+	/**
+	 * @post | result != null
+	 */
     public Color getColor() {
     	return Color.RED;
     }
 	
 	
 	/**
+	 * Applies the specific Behavior of the given Creature in the given the given world.
+	 * 
 	 * @inspects | world
 	 * @mutates | creature
 	 * @pre | world != null
@@ -83,6 +94,11 @@ public class BehaviorA extends Behavior
     }
     
     @Override
+    /**
+     * @creates | result
+     * @pre | chromosome != null
+     * @post | result.getChromosome() == chromosome
+     */
     public BehaviorA copyWithChromosome(Chromosome chromosome)
     {
     	return new BehaviorA(chromosome);
