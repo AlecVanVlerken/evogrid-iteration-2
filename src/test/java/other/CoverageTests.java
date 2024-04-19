@@ -717,7 +717,7 @@ class CoverageTests {
 		public void fromChromosome()
 		{	
 			// nog test zetten
-			network.fromChromosome(Chromosome.createRandom());
+			NeuralNetwork.fromChromosome(Chromosome.createRandom());
 		}
 	}
 	
