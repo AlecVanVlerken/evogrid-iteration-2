@@ -138,6 +138,7 @@ public class Movie extends JComponent {
      */
     private void renderSurvivalAndCreatures() {
     	this.bfiRenderer.clearPixels(bufferedImage);
+        this.bfiRenderer.renderSurvivalZone(bufferedImage, sim.getWorld(), sim.getNaturalSelection());
     	for (Creature crt : sim.getWorld().getPopulation()) {
     		this.bfiRenderer.renderCreature(bufferedImage, crt.getPosition(), crt.getBehavior().getColor());
     	}

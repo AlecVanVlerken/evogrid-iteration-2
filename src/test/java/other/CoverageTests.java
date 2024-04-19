@@ -372,7 +372,7 @@ class CoverageTests {
 		
 		@BeforeEach
 		void setup() {
-			Creature[] creature = {new Creature(new BehaviorA(Chromosome.createRandom()), new Point(1,1), Orientation.north())};
+			Creature[] creature = {new Creature(new BehaviorA(Chromosome.createRandom()), new Point(25,25), Orientation.north())};
 			world = new World(50, 50, creature);
 			chrom = Chromosome.createRandom();
 			behavior = new NeuralNetworkBehavior(chrom);
@@ -399,7 +399,7 @@ class CoverageTests {
 		public void applyBehavior()
 		{	
 			world.getPopulation()[0].getBehavior().applyBehavior(world, world.getPopulation()[0]);
-			}
+		}
 	}
 	
 	
@@ -440,7 +440,6 @@ class CoverageTests {
 					dependenciesAlmost.add(new Pair<>(neuron, 500));
 				}
 			}
-			System.out.println(dependenciesFull.size());
 			neuron1.setDependencies(dependenciesFull);
 			neuron1.doubleSensor(0);
 			assertEquals(dependenciesFull, neuron1.getDependencies());

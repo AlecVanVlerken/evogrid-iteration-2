@@ -23,7 +23,6 @@ public class HorizontalPositionSensorNeuron extends SensorNeuron
         float step = (world.getWidth()- 1)/2000.0f;
         float float_points = ((creature.getPosition().getX())/step) - 1000;
         int int_points = Math.round(float_points);
-        System.out.println(int_points);
     	return int_points;
     }
 }

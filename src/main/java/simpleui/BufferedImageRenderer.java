@@ -96,7 +96,7 @@ public class BufferedImageRenderer
 			for (int y = 0 ; y < world.getHeight() ; y++) {
 				Point p = new Point(x, y);
 				if (naturalSelection.survives(world, p)) {
-					drawPixel(bufferedImage, p, new Color(100,100,100));
+					drawPixel(bufferedImage, p, new Color(55, 75, 100));
 				}
 			}
 		}

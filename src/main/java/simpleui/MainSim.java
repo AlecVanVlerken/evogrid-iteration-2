@@ -22,8 +22,10 @@ import util.RandomUtil;
  */
 public class MainSim
 {
-	public static NaturalSelection eastCircle() {
-		return new CircularHabitableZone(new Point(5 * Constants.WSIZE / 6,Constants.WSIZE/2),Constants.WSIZE/5);
+	public static NaturalSelection bottomRightCircle() {
+		int radius = Constants.WSIZE / 5;
+		int center = Constants.WSIZE - 1 - radius;
+		return new CircularHabitableZone(new Point(center, center), radius);
 	}
 	
     public static void main(String[] args)
@@ -31,7 +33,7 @@ public class MainSim
     	RandomUtil.seed(1234);
     	
 
-    	NaturalSelection nsel = eastCircle();
+        NaturalSelection nsel = bottomRightCircle();
 
     			
     	
