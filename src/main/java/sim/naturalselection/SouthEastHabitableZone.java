@@ -3,6 +3,9 @@ package sim.naturalselection;
 import sim.World;
 import util.Point;
 
+/**
+ * @immutable
+ */
 public class SouthEastHabitableZone implements NaturalSelection {
 
 	@Override

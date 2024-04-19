@@ -56,7 +56,9 @@ public class Creature
     	return this.behavior;
     }
     
-
+    /**
+     * @post | result != null
+     */
     public Chromosome getChromosome() {
     	return behavior.getChromosome();
     }
@@ -137,6 +139,8 @@ public class Creature
      * The getClass method can be used to retrieve the runtime type of an object.
      * 
      * @inspects | other
+     * @pre | other != null
+     * @post | result == (getPosition().equals(other.getPosition())) && (getOrientation().isEqual(other.getOrientation())) && (this.getChromosome().isEqual(other.getChromosome()))&& (this.getBehavior().getClass() == other.getBehavior().getClass())
      */
     public boolean isEqual(Creature other) {
     	return (other != null) &&

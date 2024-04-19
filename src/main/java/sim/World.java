@@ -8,10 +8,15 @@ import util.Point;
 
 public class World
 {
-
+	
+	/**
+	 * @invar | width >= 0
+	 */
     private final int width;
 
-
+    /**
+	 * @invar | height >= 0
+	 */
     private final int height;
 
     /**
@@ -24,9 +29,22 @@ public class World
     private final Creature[] population;
 
 
-
+    /**
+     * Initializes a new World object.
+     *
+     * @inspects | pop
+     * @throws IllegalArgumentException | width < 0
+     * @throws IllegalArgumentException | height < 0
+     * @throws IllegalArgumentException | pop == null || pop.length < 0
+     * @throws IllegalArgumentException | Arrays.stream(pop).anyMatch(c -> c == null)
+     * @throws IllegalArgumentException | Arrays.stream(pop).anyMatch(c -> !Point.isWithin(c.getPosition(), width, height))
+     * @post | this.getWidth() == width
+     * @post | this.getHeight() == height
+     * @post | areEqualCreatureArrays(pop, getPopulation())
+     */
     public World(int width, int height, Creature[] pop)
     {
+    	if (pop == null || pop.length < 0 || width < 0 || height < 0 || Arrays.stream(pop).anyMatch(c -> c == null) || !Arrays.stream(pop).anyMatch(c -> Point.isWithin(c.getPosition(), width, height))) {throw new IllegalArgumentException(); }
         this.width = width;
         this.height = height;
         this.population = new Creature[pop.length];
@@ -36,13 +54,27 @@ public class World
     }
 
 
+    /**
+	 * @post | result >= 0
+	 */
     public int getWidth() { return this.width; }
 
+    /**
+	 * @post | result >= 0
+	 */
     public int getHeight() { return this.height; }
 
+    /**
+	 * @post | result != null
+	 * @post | Arrays.stream(result).anyMatch(c -> c != null && Point.isWithin(c.getPosition(), getWidth(), getHeight()))
+	 */
     public Creature[] getPopulation()
     {
-        return this.population;
+    	Creature[] copyPopulation = new Creature[population.length];
+    	for (int i = 0 ; i < population.length ; i++) {
+        	copyPopulation[i] = population[i].giveCopy();
+        }
+        return copyPopulation;
     }
 
 
@@ -90,6 +122,7 @@ public class World
      * true iff position is inside the world and no creature sits there
      *
      * @pre | position != null
+     * @post | result == ( this.isInside(position) && (!Arrays.stream(getPopulation()).anyMatch(c -> c.getPosition().equals(position))))
      */
     public boolean isFree(Point position)
     {

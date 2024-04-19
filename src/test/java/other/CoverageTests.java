@@ -352,6 +352,12 @@ class CoverageTests {
 				assertEquals(behavior.getChromosome().getGene(i), copyBehavior.getChromosome().getGene(i));
 			}
 		}
+		
+		@Test
+		public void applyBehavior()
+		{	
+			world.getPopulation()[0].getBehavior().applyBehavior(world, world.getPopulation()[0]);
+			}
 	}
 	
 	
@@ -388,6 +394,12 @@ class CoverageTests {
 				assertEquals(behavior.getChromosome().getGene(i), copyBehavior.getChromosome().getGene(i));
 			}
 		}
+		
+		@Test
+		public void applyBehavior()
+		{	
+			world.getPopulation()[0].getBehavior().applyBehavior(world, world.getPopulation()[0]);
+			}
 	}
 	
 	
@@ -408,6 +420,34 @@ class CoverageTests {
 			assertEquals(1000, neuron.applyActivationFunction(2000));
 			assertEquals(-1000, neuron.applyActivationFunction(-2000));
 			assertEquals(500, neuron.applyActivationFunction(500));
+		}
+		
+		@Test
+		public void doubleSensor()
+		{							
+			ArrayList<Pair<Neuron, Integer>> dependenciesFull =	new ArrayList<>();
+			ArrayList<Pair<Neuron, Integer>> dependenciesAlmost = new ArrayList<>();
+			var neuron1 = new LinearFunctionNeuron();
+			
+			for (int i = 0; i < 7; i++) {
+				if (i == 0) {
+					dependenciesFull.add(new Pair<>(neuron, 400));
+				} else {
+					dependenciesFull.add(new Pair<>(neuron, 500));
+				}
+				
+				if (i < 6) {
+					dependenciesAlmost.add(new Pair<>(neuron, 500));
+				}
+			}
+			System.out.println(dependenciesFull.size());
+			neuron1.setDependencies(dependenciesFull);
+			neuron1.doubleSensor(0);
+			assertEquals(dependenciesFull, neuron1.getDependencies());
+			
+			neuron1.setDependencies(dependenciesAlmost);
+			neuron1.doubleSensor(0);
+			assertNotEquals(dependenciesFull, neuron1.getDependencies());
 		}
 		
 	}
@@ -672,6 +712,13 @@ class CoverageTests {
 			//ActivationFunctionNeuron[] outputLayerNeurons = network.getOutputNeurons();
 			//assertEquals(outputLayerNeurons, network.getOutputNeurons());
 		}
+		
+		@Test
+		public void fromChromosome()
+		{	
+			// nog test zetten
+			network.fromChromosome(Chromosome.createRandom());
+		}
 	}
 	
 	
@@ -740,6 +787,148 @@ class CoverageTests {
 			assertFalse(Chromosome.isValidGene(Constants.GENE_MIN-1));
 			assertFalse(Chromosome.isValidGene(Constants.GENE_MAX+1));
 		}
+	}
+	
+	@Nested
+	class BehaviorATest {
+
+		Behavior behaviorA;
+		Point position;
+		Orientation orientation;
+		Chromosome chrom;
+		Creature creatureA;
+		Creature[] pop;
+
+
+		@BeforeEach
+		void setup()
+	    {
+	    	int[] weights = new int[Constants.CHROM_SIZE];
+	    	for (int i = 0 ; i < Constants.CHROM_SIZE ; i ++) {
+	        	weights[i] = Constants.GENE_MAX;
+	    	}
+	    	chrom = new Chromosome(weights);
+	        behaviorA = new BehaviorA(chrom);
+	        position = new Point(Constants.WSIZE/2, Constants.WSIZE/2);
+	        orientation = new Orientation(0);	        
+	        creatureA = new Creature(behaviorA, position, orientation);
+	        pop = new Creature[3];
+	        for (int i = 0 ; i < 3 ; i ++) {
+	        	pop[i] = creatureA;
+	    	}
+	    }
+		
+		World world;
+		
+		@BeforeEach
+		void initEach() {
+			world = new World(Constants.WSIZE, Constants.WSIZE, pop);
+		}
+		
+		@Test
+	    void testApplyBehavior_NotLimAndFreePath() {
+			
+	        Point initialPosition = creatureA.getPosition();
+	        Orientation initialOrientation = creatureA.getOrientation();
+	        behaviorA.applyBehavior(world, creatureA);
+	        assertNotEquals(creatureA.getPosition(), initialPosition);
+	        assertEquals(creatureA.getOrientation(), initialOrientation);
+	    }
+		
+		@Test
+	    void testApplyBehavior_NotLimAndNotFreePath() {
+			
+			Creature creatureAObstacle = new Creature(behaviorA, position, orientation);
+			pop[0] = creatureAObstacle;
+			behaviorA.applyBehavior(world, creatureAObstacle);
+	        Point initialPosition = creatureA.getPosition();
+	        Orientation initialOrientation = creatureA.getOrientation();
+	        behaviorA.applyBehavior(world, creatureA);
+	        assertNotEquals(creatureA.getPosition(), initialPosition);
+	        assertEquals(creatureA.getOrientation(), initialOrientation);
+	    }
+
+	    @Test
+	    void testApplyBehavior_Lim() {
+
+	    	creatureA = new Creature(behaviorA, new Point(1, 1), orientation);
+	        Point initialPosition = creatureA.getPosition();
+	        Orientation initialOrientation = creatureA.getOrientation();
+	        behaviorA.applyBehavior(world, creatureA);
+	        assertEquals(creatureA.getPosition(), initialPosition);
+	        assertNotEquals(creatureA.getOrientation(), initialOrientation);
+	    }
+	}
+	
+	@Nested
+	class BehaviorBTest {
+
+		Behavior behaviorB;
+		Point position;
+		Orientation orientation;
+		Chromosome chrom;
+		Creature creatureB;
+		Creature[] pop;
+
+
+		@BeforeEach
+		void setup()
+	    {
+	    	int[] weights = new int[Constants.CHROM_SIZE];
+	    	for (int i = 0 ; i < Constants.CHROM_SIZE ; i ++) {
+	        	weights[i] = Constants.GENE_MAX;
+	    	}
+	    	chrom = new Chromosome(weights);
+	        behaviorB = new BehaviorA(chrom);
+	        position = new Point(Constants.WSIZE/2, Constants.WSIZE/2);
+	        orientation = new Orientation(0);	        
+	        creatureB = new Creature(behaviorB, position, orientation);
+	        pop = new Creature[3];
+	        for (int i = 0 ; i < 3 ; i ++) {
+	        	pop[i] = creatureB;
+	    	}
+	    }
+		
+		World world;
+		
+		@BeforeEach
+		void initEach() {
+			world = new World(Constants.WSIZE, Constants.WSIZE, pop);
+		}
+		
+		@Test
+	    void testApplyBehavior_NotLimAndFreePath() {
+			
+	        Point initialPosition = creatureB.getPosition();
+	        Orientation initialOrientation = creatureB.getOrientation();
+	        behaviorB.applyBehavior(world, creatureB);
+	        assertNotEquals(creatureB.getPosition(), initialPosition);
+	        assertEquals(creatureB.getOrientation(), initialOrientation);
+	    }
+		
+		@Test
+	    void testApplyBehavior_NotLimAndNotFreePath() {
+			
+			Creature creatureAObstacle = new Creature(behaviorB, position, orientation);
+			pop[0] = creatureAObstacle;
+			behaviorB.applyBehavior(world, creatureAObstacle);
+	        Point initialPosition = creatureB.getPosition();
+	        Orientation initialOrientation = creatureB.getOrientation();
+	        behaviorB.applyBehavior(world, creatureB);
+	        assertNotEquals(creatureB.getPosition(), initialPosition);
+	        assertEquals(creatureB.getOrientation(), initialOrientation);
+	    }
+
+	    @Test
+	    void testApplyBehavior_Lim() {
+
+	    	creatureB = new Creature(behaviorB, new Point(1, 1), orientation);
+	        Point initialPosition = creatureB.getPosition();
+	        Orientation initialOrientation = creatureB.getOrientation();
+	        behaviorB.applyBehavior(world, creatureB);
+	        assertEquals(creatureB.getPosition(), initialPosition);
+	        assertNotEquals(creatureB.getOrientation(), initialOrientation);
+	    }
 	}
 	
 	@Nested
@@ -855,7 +1044,9 @@ class CoverageTests {
 			
 			Creature[] creature = world.getPopulation();
 			
-			assertEquals(creature, world.getPopulation());
+			for (int i = 0; i < world.getPopulation().length; i++) {
+				assertEquals(creature[i].getChromosome(), world.getPopulation()[i].getChromosome());
+				}
 		}
 		
 		@Test
@@ -906,7 +1097,6 @@ class CoverageTests {
 			simulation.nextGeneration();
 			
 			assertFalse(world.equals(simulation.getWorld()));
-
 		}
 	}
 }

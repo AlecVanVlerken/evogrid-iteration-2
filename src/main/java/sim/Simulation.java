@@ -19,15 +19,26 @@ public class Simulation
 	
 	/**
 	 * not a representation object for performance
+	 * 
+	 * @invar | world != null
 	 */
 	private World world;
 
+	/**
+	 * @invar | populationSize >= 0
+	 */
     private final int populationSize;
     
+    /**
+     * @post | result != null
+     */
     public NaturalSelection getNaturalSelection() {
     	return nsel;
     }
 
+    /**
+     * @post | result >= 0
+     */
 	public int getPopulationSize() {
 		return populationSize;
 	}
@@ -115,6 +126,9 @@ public class Simulation
      * - Finally the world is reset with the latter offspring behaviors using
      *   createRandWorldWith method.
      *  
+     *  @mutates | getWorld()
+     *  @post | getWorld() != null
+	 *  @post | getWorld().getPopulation().length == getPopulationSize()
      */
     public void nextGeneration() {
     	

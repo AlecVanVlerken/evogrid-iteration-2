@@ -16,13 +16,14 @@ public class HorizontalPositionSensorNeuron extends SensorNeuron
      * @inspects | creature
      * @pre | world != null
      * @pre | creature != null
-     * @post | ((result >= 0) && (result <= world.getWidth()- 1))
+     * @post | ((result >= -1000) && (result <= 1000))
      */
     public int computeOutput(World world, Creature creature)
     {
         float step = (world.getWidth()- 1)/2000.0f;
         float float_points = ((creature.getPosition().getX())/step) - 1000;
         int int_points = Math.round(float_points);
+        System.out.println(int_points);
     	return int_points;
     }
 }

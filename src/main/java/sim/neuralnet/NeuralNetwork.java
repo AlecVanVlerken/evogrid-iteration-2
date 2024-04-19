@@ -113,6 +113,7 @@ public class NeuralNetwork
     public ActivationFunctionNeuron getTurnCounterclockwiseNeuron() { return this.turnCounterclockwiseNeuron; }
 
     /**
+     * @inspects | chromosome
      * @pre | chromosome != null
      * post:
      * - getInputNeurons() and the first 7 genes of chromosome are used as dependencies/weights of getMoveForwardNeuron()

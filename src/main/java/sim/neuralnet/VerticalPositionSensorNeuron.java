@@ -16,7 +16,7 @@ public class VerticalPositionSensorNeuron extends SensorNeuron
      * @inspects | creature
      * @pre | world != null
      * @pre | creature != null
-     * @post | ((result >= 0) && (result <= world.getHeight()- 1))
+     * @post | ((result >= -1000) && (result <= 1000))
      */
     public int computeOutput(World world, Creature creature)
     {

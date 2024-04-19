@@ -67,6 +67,14 @@ public class NeuralNetworkBehavior extends Behavior	{
     	}
     }
 
+    /**
+     * Applies the forward movement of the given Creature in the given the given world.
+     * 
+	 * @inspects | world
+	 * @mutates | creature
+	 * @pre | world != null
+	 * @pre | creature != null
+	 */
     private void processForwardMovement(World world, Creature creature)
     {
     	int forwardVal = neuralNetwork.getMoveForwardNeuron().computeOutput(world, creature);

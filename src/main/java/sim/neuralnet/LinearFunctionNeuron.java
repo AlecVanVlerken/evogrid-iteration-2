@@ -1,5 +1,7 @@
 package sim.neuralnet;
 
+import util.Pair;
+
 /**
  * @immutable
  */
@@ -20,6 +22,7 @@ public class LinearFunctionNeuron extends ActivationFunctionNeuron
     
     
     /**
+     * @mutates | getDependencies()
      * @pre | 0 <= index
      * @pre | index < getDependencies().size()
      * To make a sensor Neuron have more impact on super.computeOutput we can link to it twice (with the same weight)
@@ -29,9 +32,11 @@ public class LinearFunctionNeuron extends ActivationFunctionNeuron
      */
     public void doubleSensor(int index) {
 		var deps = getDependencies();
-		var p = deps.get(index);
-		deps.add(p);
-		setDependencies(deps);
+		if (deps.size() < 7 && index < deps.size()) {
+			var p = deps.get(index);
+			deps.add(p);
+			setDependencies(deps);
+    	}		
     }
     
     

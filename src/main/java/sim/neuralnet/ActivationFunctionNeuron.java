@@ -36,7 +36,7 @@ public abstract class ActivationFunctionNeuron implements Neuron
     }
     
     /**
-     * @pre | deps.size() == 7
+     * @pre | deps.size() <= 7
      * @pre | deps.stream().allMatch(pair -> pair != null)
      * @post | this.getDependencies() == deps
      */
