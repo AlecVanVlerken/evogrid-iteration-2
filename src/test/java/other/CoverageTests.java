@@ -1104,9 +1104,18 @@ class CoverageTests {
 		public void nextGeneration()
 		{	
 			World world = simulation.getWorld();
+			simulation.step();
+			int selected = simulation.getEligibleParentCount();
+			int initial = simulation.getInitialZoneOccupancy();
 			simulation.nextGeneration();
 			
 			assertFalse(world.equals(simulation.getWorld()));
+			assertEquals(2, simulation.getGeneration());
+			assertEquals(0, simulation.getTickCount());
+			assertEquals(Constants.POPU_SIZE, simulation.getWorld().getPopulation().length);
+			assertEquals(1, simulation.getLastCompletedGeneration().orElseThrow().getEvaluationTicks());
+			assertEquals(initial, simulation.getLastCompletedGeneration().orElseThrow().getInitialZoneOccupancy());
+			assertEquals(selected, simulation.getLastCompletedGeneration().orElseThrow().getSelectedParentCount());
 		}
 	}
 }

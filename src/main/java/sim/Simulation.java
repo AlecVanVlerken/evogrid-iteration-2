@@ -4,6 +4,7 @@ package sim;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Optional;
 
 import sim.behaviors.Behavior;
 import sim.behaviors.NeuralNetworkBehavior;
@@ -28,6 +29,68 @@ public class Simulation
 	 * @invar | populationSize >= 0
 	 */
     private final int populationSize;
+
+    /**
+     * @invar | generation >= 1
+     */
+    private int generation = 1;
+
+    /**
+     * @invar | tickCount >= 0
+     */
+    private long tickCount;
+
+    /**
+     * @invar | initialZoneOccupancy >= 0 && initialZoneOccupancy <= populationSize
+     */
+    private int initialZoneOccupancy;
+
+    private GenerationSummary lastCompletedGeneration;
+
+    /**
+     * @post | result >= 1
+     */
+    public int getGeneration() { return generation; }
+
+    /**
+     * @post | result >= 0
+     */
+    public long getTickCount() { return tickCount; }
+
+    /**
+     * @post | result >= 0 && result <= getPopulationSize()
+     */
+    public int getInitialZoneOccupancy() { return initialZoneOccupancy; }
+
+    /**
+     * Counts creatures that qualify at their current positions. This is not a completed selection result.
+     *
+     * @post | result == Arrays.stream(getWorld().getPopulation()).filter(c ->
+     *       | getNaturalSelection().survives(getWorld(), c.getPosition())).count()
+     */
+    public int getEligibleParentCount() { return survivingCreatures().size(); }
+
+    /**
+     * Returns the latest immutable endpoint result, or an empty optional before the first transition.
+     *
+     * @post | result != null
+     */
+    public Optional<GenerationSummary> getLastCompletedGeneration() {
+        return Optional.ofNullable(lastCompletedGeneration);
+    }
+
+    /**
+     * Evaluates one tick of the current generation. Call this instead of stepping the world directly
+     * when evaluation ticks must be counted.
+     *
+     * @mutates | this
+     * @post | getTickCount() == old(getTickCount()) + 1
+     * @post | getGeneration() == old(getGeneration())
+     */
+    public void step() {
+        world.step();
+        tickCount++;
+    }
     
     /**
      * @post | result != null
@@ -60,6 +123,8 @@ public class Simulation
      * @throws IllegalArgumentException | nsel == null
      * @post | getPopulationSize() == populationSize
      * @post | getNaturalSelection() == nsel
+	 * @post | getGeneration() == 1 && getTickCount() == 0
+	 * @post | getInitialZoneOccupancy() == getEligibleParentCount()
 	 */
     public Simulation(int size, int populationSize, NaturalSelection nsel) {
         validateCapacity(size, populationSize);
@@ -67,6 +132,29 @@ public class Simulation
     	this.populationSize = populationSize;
     	this.world = createInitWorldNeuralnets(size, populationSize);
     	this.nsel = nsel;
+        this.initialZoneOccupancy = getEligibleParentCount();
+    }
+
+    /**
+     * Starts from an explicit population, copying its creature state while sharing behaviors.
+     * The supplied world must be square with positive dimensions. Its population size is retained.
+     *
+     * @inspects | initialWorld, nsel
+     * @throws IllegalArgumentException | initialWorld == null || nsel == null
+     * @throws IllegalArgumentException | initialWorld.getWidth() <= 0 || initialWorld.getWidth() != initialWorld.getHeight()
+     * @post | getPopulationSize() == initialWorld.getPopulation().length
+     * @post | getNaturalSelection() == nsel
+     * @post | getGeneration() == 1 && getTickCount() == 0
+     */
+    public Simulation(World initialWorld, NaturalSelection nsel) {
+        if (initialWorld == null || nsel == null || initialWorld.getWidth() <= 0
+                || initialWorld.getWidth() != initialWorld.getHeight()) {
+            throw new IllegalArgumentException();
+        }
+        this.populationSize = initialWorld.getPopulation().length;
+        this.world = new World(initialWorld.getWidth(), initialWorld.getHeight(), initialWorld.getPopulation());
+        this.nsel = nsel;
+        this.initialZoneOccupancy = getEligibleParentCount();
     }
     
     /**
@@ -149,23 +237,30 @@ public class Simulation
     }
 
     /**
-     * Replaces the current world with a new one.
-     * - If no creature survived (see private method) we reset world with createInitWorldNeuralnets. Else:
-     * - We gather surviving creatures in a list `surv`.
-     * - We compute the offpsring chromosomes (see private method) based on that list.
-     *   Note that there should be `populationSize` chromosomes.
-     * - Each new behavior is then obtained from an offspring chromosome by using
-     *   Behavior.copyWithChromosome. To determine which kind of behavior to use, we cycle through `surv`.
-     * - Finally the world is reset with the latter offspring behaviors using
-     *   createRandWorldWith method.
+     * Completes manual endpoint selection and replaces the world with freshly placed offspring.
+     * Only creatures qualifying at this moment supply genes. Parents are sampled uniformly
+     * with replacement, followed by crossover and the existing mutation probability.
+     * Behavior types cycle through the selected parents. If none qualify, a fresh random
+     * neural population is created. Evaluation lengths are not fixed or automatically advanced.
+     * The immutable summary describes the old generation, including its initial zone occupancy.
      *  
-     *  @mutates | getWorld()
+     *  @mutates | this
      *  @post | getWorld() != null
+	 *  @post | getGeneration() == old(getGeneration()) + 1
+	 *  @post | getTickCount() == 0
+	 *  @post | getInitialZoneOccupancy() == getEligibleParentCount()
+	 *  @post | getLastCompletedGeneration().isPresent()
+	 *  @post | getLastCompletedGeneration().get().getGeneration() == old(getGeneration())
+	 *  @post | getLastCompletedGeneration().get().getEvaluationTicks() == old(getTickCount())
+	 *  @post | getLastCompletedGeneration().get().getInitialZoneOccupancy() == old(getInitialZoneOccupancy())
+	 *  @post | getLastCompletedGeneration().get().getSelectedParentCount() == old(getEligibleParentCount())
 	 *  @post | getWorld().getPopulation().length == getPopulationSize()
      */
     public void nextGeneration() {
     	
     	ArrayList<Creature> surv = survivingCreatures();
+        GenerationSummary completed = new GenerationSummary(generation, tickCount,
+                initialZoneOccupancy, surv.size());
     	
     	if (surv.size() == 0) {
     		world = createInitWorldNeuralnets(world.getWidth(), populationSize);
@@ -187,10 +282,14 @@ public class Simulation
 	    	
 	    	world = createRandWorldWith(world.getWidth(), populationSize, behaviors);
     	}
+        lastCompletedGeneration = completed;
+        generation++;
+        tickCount = 0;
+        initialZoneOccupancy = getEligibleParentCount();
     }
 
     /**
-     * The list of creatures that survive, according to `nsel : NaturalSelection` field
+     * Snapshots of creatures currently qualifying for reproduction under the selection rule.
      */
     private ArrayList<Creature> survivingCreatures() {
     	

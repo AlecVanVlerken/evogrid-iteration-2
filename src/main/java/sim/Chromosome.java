@@ -93,9 +93,16 @@ public class Chromosome
     
     
     /**
-     * LEGIT
-     * 
-     * A new version of crossover.
+     * Inherits each of four whole six-gene blocks from a randomly chosen parent.
+     * Neither parent is modified.
+     *
+     * @inspects | other
+     * @pre | other != null
+     * @creates | result
+     * @post | result != null
+     * @post | IntStream.range(0, 4).allMatch(block ->
+     *       | IntStream.range(block * 6, (block + 1) * 6).allMatch(i -> result.getGene(i) == getGene(i)) ||
+     *       | IntStream.range(block * 6, (block + 1) * 6).allMatch(i -> result.getGene(i) == other.getGene(i)))
      */
     public Chromosome crossover2(Chromosome other) {
     	int[] offspringGenes = new int[Constants.CHROM_SIZE];

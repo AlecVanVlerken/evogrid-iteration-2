@@ -113,7 +113,7 @@ public class Movie extends JComponent {
         if ( elapsedSinceLastUpdate.isPresent() )
         {
            
-            sim.getWorld().step();
+            sim.step();
             renderSurvivalAndCreatures();
 
         }
