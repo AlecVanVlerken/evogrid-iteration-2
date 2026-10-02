@@ -45,7 +45,7 @@ public class Point
     }
 
     /**
-     * Returns the X-coordinate of the Point.
+     * Returns the Y-coordinate of the Point.
      */
     public int getY()
     {

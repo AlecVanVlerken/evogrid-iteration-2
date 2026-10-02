@@ -8,7 +8,8 @@ import util.Orientation;
 import util.Pair;
 
 /**
- * Output neurons depend at least on all input neurons, if they depend on something.
+ * Factory networks connect each output to the seven input neurons.
+ * Callers can explicitly edit output neurons and their connections.
  * Arrays are snapshots; the neuron references remain freely accessible and editable.
  * 
  */

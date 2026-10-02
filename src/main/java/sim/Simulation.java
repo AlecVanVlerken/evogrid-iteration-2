@@ -31,12 +31,17 @@ public class Simulation
     private final int populationSize;
 
     /**
+     * @invar | generationTicks > 0
+     */
+    private final int generationTicks;
+
+    /**
      * @invar | generation >= 1
      */
     private int generation = 1;
 
     /**
-     * @invar | tickCount >= 0
+     * @invar | 0 <= tickCount && tickCount < generationTicks
      */
     private long tickCount;
 
@@ -56,6 +61,11 @@ public class Simulation
      * @post | result >= 0
      */
     public long getTickCount() { return tickCount; }
+
+    /**
+     * @post | result > 0
+     */
+    public int getGenerationTicks() { return generationTicks; }
 
     /**
      * @post | result >= 0 && result <= getPopulationSize()
@@ -80,16 +90,35 @@ public class Simulation
     }
 
     /**
-     * Evaluates one tick of the current generation. Call this instead of stepping the world directly
-     * when evaluation ticks must be counted.
+     * Starts a fresh random neural population with the same world size and selection settings.
      *
      * @mutates | this
-     * @post | getTickCount() == old(getTickCount()) + 1
-     * @post | getGeneration() == old(getGeneration())
+     * @post | getGeneration() == 1 && getTickCount() == 0
+     * @post | getLastCompletedGeneration().isEmpty()
+     * @post | getInitialZoneOccupancy() == getEligibleParentCount()
+     * @post | getWorld().getPopulation().length == getPopulationSize()
+     */
+    public void restart() {
+        world = createInitWorldNeuralnets(world.getWidth(), populationSize);
+        generation = 1;
+        tickCount = 0;
+        lastCompletedGeneration = null;
+        initialZoneOccupancy = getEligibleParentCount();
+    }
+
+    /**
+     * Evaluates one tick and selects parents after exactly getGenerationTicks() updates.
+     * Call this instead of stepping the world directly to track evaluation and automatic progression.
+     *
+     * @mutates | this
+     * @post | getTickCount() == (old(getTickCount()) + 1) % getGenerationTicks()
+     * @post | getGeneration() == old(getGeneration()) +
+     *       | (old(getTickCount()) + 1 == getGenerationTicks() ? 1 : 0)
      */
     public void step() {
         world.step();
         tickCount++;
+        if (tickCount == generationTicks) { nextGeneration(); }
     }
     
     /**
@@ -127,8 +156,22 @@ public class Simulation
 	 * @post | getInitialZoneOccupancy() == getEligibleParentCount()
 	 */
     public Simulation(int size, int populationSize, NaturalSelection nsel) {
+        this(size, populationSize, nsel, Constants.GENERATION_TICKS);
+    }
+
+    /**
+     * Creates a randomly initialized simulation with a fixed positive evaluation length.
+     *
+     * @throws IllegalArgumentException | size <= 0 || populationSize < 0 || generationTicks <= 0
+     * @throws IllegalArgumentException | populationSize > (long) size * size || nsel == null
+     * @post | getGenerationTicks() == generationTicks
+     * @post | getPopulationSize() == populationSize
+     * @post | getGeneration() == 1 && getTickCount() == 0
+     */
+    public Simulation(int size, int populationSize, NaturalSelection nsel, int generationTicks) {
         validateCapacity(size, populationSize);
-        if (nsel == null) { throw new IllegalArgumentException(); }
+        if (nsel == null || generationTicks <= 0) { throw new IllegalArgumentException(); }
+        this.generationTicks = generationTicks;
     	this.populationSize = populationSize;
     	this.world = createInitWorldNeuralnets(size, populationSize);
     	this.nsel = nsel;
@@ -147,11 +190,27 @@ public class Simulation
      * @post | getGeneration() == 1 && getTickCount() == 0
      */
     public Simulation(World initialWorld, NaturalSelection nsel) {
-        if (initialWorld == null || nsel == null || initialWorld.getWidth() <= 0
+        this(initialWorld, nsel, Constants.GENERATION_TICKS);
+    }
+
+    /**
+     * Starts from an explicit square population with a fixed positive evaluation length.
+     * Creature state is copied; behaviors are shared as in World snapshots.
+     *
+     * @inspects | initialWorld, nsel
+     * @throws IllegalArgumentException | initialWorld == null || nsel == null || generationTicks <= 0
+     * @throws IllegalArgumentException | initialWorld.getWidth() <= 0 || initialWorld.getWidth() != initialWorld.getHeight()
+     * @post | getGenerationTicks() == generationTicks
+     * @post | getPopulationSize() == initialWorld.getPopulation().length
+     * @post | getGeneration() == 1 && getTickCount() == 0
+     */
+    public Simulation(World initialWorld, NaturalSelection nsel, int generationTicks) {
+        if (initialWorld == null || nsel == null || generationTicks <= 0 || initialWorld.getWidth() <= 0
                 || initialWorld.getWidth() != initialWorld.getHeight()) {
             throw new IllegalArgumentException();
         }
         this.populationSize = initialWorld.getPopulation().length;
+        this.generationTicks = generationTicks;
         this.world = new World(initialWorld.getWidth(), initialWorld.getHeight(), initialWorld.getPopulation());
         this.nsel = nsel;
         this.initialZoneOccupancy = getEligibleParentCount();
@@ -237,11 +296,12 @@ public class Simulation
     }
 
     /**
-     * Completes manual endpoint selection and replaces the world with freshly placed offspring.
+     * Completes endpoint selection and replaces the world with freshly placed offspring.
      * Only creatures qualifying at this moment supply genes. Parents are sampled uniformly
      * with replacement, followed by crossover and the existing mutation probability.
      * Behavior types cycle through the selected parents. If none qualify, a fresh random
-     * neural population is created. Evaluation lengths are not fixed or automatically advanced.
+     * neural population is created. Automatic evaluation calls this at the tick limit.
+     * A manual call selects immediately at the current positions, possibly completing evaluation early.
      * The immutable summary describes the old generation, including its initial zone occupancy.
      *  
      *  @mutates | this

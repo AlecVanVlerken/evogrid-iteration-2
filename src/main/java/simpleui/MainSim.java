@@ -42,6 +42,6 @@ public class MainSim
     			Constants.POPU_SIZE,
     			nsel);
     	
-    	SimLifeWindow.create("Iteration 2", Constants.WSIZE, Constants.WSIZE, sim);
+        SimLifeWindow.create("EvoGrid / Iteration 2", Constants.WSIZE, Constants.WSIZE, sim);
     }
 }

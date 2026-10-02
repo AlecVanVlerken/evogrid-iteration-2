@@ -1,7 +1,8 @@
 package sim;
 
 /**
- * The endpoint selection result of one completed manual generation.
+ * The endpoint selection result of one completed generation, automatic or manually advanced.
+ * Evaluation ticks record actual evaluation time, including shorter manual generations.
  * Counts describe qualification for reproduction, not deaths during evaluation.
  *
  * @immutable

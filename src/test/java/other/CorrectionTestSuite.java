@@ -243,7 +243,7 @@ class CorrectionTestSuite {
 	}
 	
 	@Nested
-	class PairEncapsulation {
+	class PairReferenceContracts {
 		
 		Pair<Creature, Creature> pair;
 		Creature first;
@@ -256,31 +256,23 @@ class CorrectionTestSuite {
 			pair = new Pair<Creature, Creature>(first, second);
 		}
 		
-		@Test
-		void pairEncapsIn() {			
-			Creature other = new Creature(new BehaviorA(Chromosome.createRandom()), new Point(Constants.WSIZE / 2, Constants.WSIZE / 2), Orientation.east());
-			
-			first = other;
-			second = other;
-			
-			assertNotEquals(other, pair.getFirst());
-			assertNotEquals(other, pair.getSecond());			
-		}
-		
-		@Test
-		void pairEncapsOut() {		
-			Creature other1 = pair.getFirst();
-			Creature other2 = pair.getSecond();
-			
-			other1 = new Creature(new BehaviorA(Chromosome.createRandom()), new Point(Constants.WSIZE / 2, Constants.WSIZE / 2), Orientation.east());	
-			other2 = new Creature(new BehaviorA(Chromosome.createRandom()), new Point(Constants.WSIZE / 2, Constants.WSIZE / 2), Orientation.east());
-			
-			assertNotEquals(other1, pair.getFirst());
-			assertNotEquals(other2, pair.getSecond());
-		}
-	}
-	
-	
+        @Test
+        void constructorKeepsSuppliedCreatureReferences() {
+            assertSame(first, pair.getFirst());
+            assertSame(second, pair.getSecond());
+        }
+
+        @Test
+        void gettersShareTheSuppliedCreatureReferences() {
+            pair.getFirst().turnClockwise();
+            pair.getSecond().turnCounterclockwise();
+            assertTrue(first.getOrientation().isEqual(Orientation.northEast()));
+            assertTrue(second.getOrientation().isEqual(Orientation.northWest()));
+            assertSame(first, pair.getFirst());
+            assertSame(second, pair.getSecond());
+        }
+    }
+
 	@Nested
 	class BorderHabitableZoneEncapsulation {
 		
@@ -294,12 +286,12 @@ class CorrectionTestSuite {
 		}
 		
 		@Test
-		void pairEncapsIn() {			
+		void constructorCapturesBorderSize() {
 			int other = 20;
 			
 			borderSize = other;
 			
-			assertNotEquals(other, zone.getBorderSize());		
+			assertEquals(10, zone.getBorderSize());
 		}
 	}
 	
@@ -319,15 +311,16 @@ class CorrectionTestSuite {
 		}
 		
 		@Test
-		void pairEncapsIn() {			
-			int other1 = 10;
+		void constructorCapturesCenterAndRadius() {
+			Point originalCenter = center;
+            int other1 = 10;
 			Point other2 = new Point(20, 20);
 			
 			center = other2;
 			radius = other1;
 			
-			assertNotEquals(other1, zone.getRadiusSquared());
-			assertNotEquals(other2, zone.getCenter());
+			assertEquals(25, zone.getRadiusSquared());
+			assertSame(originalCenter, zone.getCenter());
 		}
 	}
 	
@@ -374,17 +367,17 @@ class CorrectionTestSuite {
 			creature = new Creature(behavior, new Point(Constants.WSIZE / 2, Constants.WSIZE / 2), Orientation.north());
 		}
 		
-		@Test
-		void pairEncapsOut() {		
-			Chromosome other = creature.getChromosome();
-			
-			other = Chromosome.createRandom();
-			
-			assertNotEquals(other, creature.getChromosome());
-		}
-	}
-	
-	
+        @Test
+        void chromosomeGetterSharesAnImmutableInheritedValue() {
+            Chromosome original = creature.getChromosome();
+            int before = original.getGene(0);
+            Chromosome changed = original.mutate(0, before == Constants.GENE_MAX ? -1 : 1);
+            assertFalse(original.isEqual(changed));
+            assertEquals(before, creature.getChromosome().getGene(0));
+            assertSame(behavior.getChromosome(), creature.getChromosome());
+        }
+    }
+
 	@Nested
 	/**
 	 *  FLAW 
@@ -481,7 +474,7 @@ class CorrectionTestSuite {
 				}
 				
 				if (i < 6) {
-					dependenciesAlmost.add(new Pair<>(neuron, 500));
+					dependenciesAlmost.add(new Pair<>(neuron, i == 0 ? 400 : 500));
 				}
 			}
 			
@@ -495,7 +488,9 @@ class CorrectionTestSuite {
 			
 			neuron1.setDependencies(dependenciesAlmost);
 			neuron1.doubleSensor(0);
-			assertNotEquals(dependenciesFull, neuron1.getDependencies());
+			assertEquals(7, neuron1.getDependencies().size());
+            assertEquals(dependenciesAlmost.get(0).getFirst(), neuron1.getDependencies().get(6).getFirst());
+            assertEquals(400, neuron1.getDependencies().get(6).getSecond());
 		}
 		
 	}

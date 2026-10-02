@@ -34,6 +34,18 @@ class NeuralDecisionTest {
     }
 
     @Test
+    void positionSensorsNormalizeTheirOwnAxisIncludingExactEndpoints() {
+        World world = new World(5, 9, new Creature[0]);
+        int[][] samples = {{0, 8, -1000, 1000}, {1, 2, -500, -500},
+                {2, 4, 0, 0}, {4, 0, 1000, -1000}};
+        for (int[] sample : samples) {
+            Creature subject = creature(new Point(sample[0], sample[1]), Orientation.north());
+            assertEquals(sample[2], new HorizontalPositionSensorNeuron().computeOutput(world, subject));
+            assertEquals(sample[3], new VerticalPositionSensorNeuron().computeOutput(world, subject));
+        }
+    }
+
+    @Test
     void passageSensorsRotateWithEveryHeadingAndDetectBoundaries() {
         Orientation[] offsets = {Orientation.north(), Orientation.northWest(), Orientation.northEast()};
         for (int heading = 0; heading < 8; heading++) {

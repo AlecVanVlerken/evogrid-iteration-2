@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import java.util.ArrayList;
 
@@ -282,10 +284,15 @@ class CoverageTests {
 		@Test
 		public void copyWithChromosome()
 		{	
-			BehaviorA copyBehavior = behavior.copyWithChromosome(chrom);
-			for (int i = 0; i < Constants.CHROM_SIZE; i++) {
-				assertEquals(behavior.getChromosome().getGene(i), copyBehavior.getChromosome().getGene(i));
-			}
+			int[] originalGenes = new int[Constants.CHROM_SIZE];
+            for (int i = 0; i < originalGenes.length; i++) { originalGenes[i] = chrom.getGene(i); }
+            Chromosome replacement = chrom.mutate(0, chrom.getGene(0) == Constants.GENE_MAX ? -1 : 1);
+            BehaviorA copyBehavior = behavior.copyWithChromosome(replacement);
+            assertNotSame(behavior, copyBehavior);
+            assertSame(replacement, copyBehavior.getChromosome());
+            for (int i = 0; i < originalGenes.length; i++) {
+                assertEquals(originalGenes[i], behavior.getChromosome().getGene(i));
+            }
 		}
 	}
 	
@@ -315,10 +322,15 @@ class CoverageTests {
 		@Test
 		public void copyWithChromosome()
 		{	
-			BehaviorB copyBehavior = behavior.copyWithChromosome(chrom);
-			for (int i = 0; i < Constants.CHROM_SIZE; i++) {
-				assertEquals(behavior.getChromosome().getGene(i), copyBehavior.getChromosome().getGene(i));
-			}
+			int[] originalGenes = new int[Constants.CHROM_SIZE];
+            for (int i = 0; i < originalGenes.length; i++) { originalGenes[i] = chrom.getGene(i); }
+            Chromosome replacement = chrom.mutate(0, chrom.getGene(0) == Constants.GENE_MAX ? -1 : 1);
+            BehaviorB copyBehavior = behavior.copyWithChromosome(replacement);
+            assertNotSame(behavior, copyBehavior);
+            assertSame(replacement, copyBehavior.getChromosome());
+            for (int i = 0; i < originalGenes.length; i++) {
+                assertEquals(originalGenes[i], behavior.getChromosome().getGene(i));
+            }
 		}
 	}
 	
@@ -333,7 +345,7 @@ class CoverageTests {
 		
 		@BeforeEach
 		void setup() {
-			Creature[] creature = {new Creature(new BehaviorA(Chromosome.createRandom()), new Point(1,1), Orientation.north())};
+			Creature[] creature = {new Creature(new ImmobileBehavior(Chromosome.createRandom()), new Point(1,1), Orientation.north())};
 			world = new World(50, 50, creature);
 			chrom = Chromosome.createRandom();
 			behavior = new ImmobileBehavior(chrom);
@@ -348,16 +360,23 @@ class CoverageTests {
 		@Test
 		public void copyWithChromosome()
 		{	
-			ImmobileBehavior copyBehavior = behavior.copyWithChromosome(chrom);
-			for (int i = 0; i < Constants.CHROM_SIZE; i++) {
-				assertEquals(behavior.getChromosome().getGene(i), copyBehavior.getChromosome().getGene(i));
-			}
+			int[] originalGenes = new int[Constants.CHROM_SIZE];
+            for (int i = 0; i < originalGenes.length; i++) { originalGenes[i] = chrom.getGene(i); }
+            Chromosome replacement = chrom.mutate(0, chrom.getGene(0) == Constants.GENE_MAX ? -1 : 1);
+            ImmobileBehavior copyBehavior = behavior.copyWithChromosome(replacement);
+            assertNotSame(behavior, copyBehavior);
+            assertSame(replacement, copyBehavior.getChromosome());
+            for (int i = 0; i < originalGenes.length; i++) {
+                assertEquals(originalGenes[i], behavior.getChromosome().getGene(i));
+            }
 		}
 		
 		@Test
 		public void applyBehavior()
 		{	
-			world.getPopulation()[0].getBehavior().applyBehavior(world, world.getPopulation()[0]);
+			Creature[] before = world.getPopulation();
+            world.step();
+            assertTrue(World.areEqualCreatureArrays(before, world.getPopulation()));
 			}
 	}
 	
@@ -373,7 +392,7 @@ class CoverageTests {
 		
 		@BeforeEach
 		void setup() {
-			Creature[] creature = {new Creature(new BehaviorA(Chromosome.createRandom()), new Point(25,25), Orientation.north())};
+			Creature[] creature = {new Creature(new NeuralNetworkBehavior(new Chromosome(new int[Constants.CHROM_SIZE])), new Point(25,25), Orientation.north())};
 			world = new World(50, 50, creature);
 			chrom = Chromosome.createRandom();
 			behavior = new NeuralNetworkBehavior(chrom);
@@ -390,16 +409,25 @@ class CoverageTests {
 		@Test
 		public void copyWithChromosome()
 		{	
-			NeuralNetworkBehavior copyBehavior = behavior.copyWithChromosome(chrom);
-			for (int i = 0; i < Constants.CHROM_SIZE; i++) {
-				assertEquals(behavior.getChromosome().getGene(i), copyBehavior.getChromosome().getGene(i));
-			}
+			int[] originalGenes = new int[Constants.CHROM_SIZE];
+            for (int i = 0; i < originalGenes.length; i++) { originalGenes[i] = chrom.getGene(i); }
+            Chromosome replacement = chrom.mutate(0, chrom.getGene(0) == Constants.GENE_MAX ? -1 : 1);
+            NeuralNetworkBehavior copyBehavior = behavior.copyWithChromosome(replacement);
+            assertNotSame(behavior, copyBehavior);
+            assertSame(replacement, copyBehavior.getChromosome());
+            for (int i = 0; i < originalGenes.length; i++) {
+                assertEquals(originalGenes[i], behavior.getChromosome().getGene(i));
+            }
 		}
 		
 		@Test
 		public void applyBehavior()
 		{	
-			world.getPopulation()[0].getBehavior().applyBehavior(world, world.getPopulation()[0]);
+			NeuralNetworkBehavior installed = (NeuralNetworkBehavior) world.getPopulation()[0].getBehavior();
+            installed.getNeuralNetwork().getMoveForwardNeuron().setBias(1);
+            world.step();
+            assertEquals(new Point(25, 24), world.getPopulation()[0].getPosition());
+            assertTrue(Orientation.north().isEqual(world.getPopulation()[0].getOrientation()));
 		}
 	}
 	
@@ -438,7 +466,7 @@ class CoverageTests {
 				}
 				
 				if (i < 6) {
-					dependenciesAlmost.add(new Pair<>(neuron, 500));
+					dependenciesAlmost.add(new Pair<>(neuron, i == 0 ? 400 : 500));
 				}
 			}
 			neuron1.setDependencies(dependenciesFull);
@@ -451,7 +479,9 @@ class CoverageTests {
 			
 			neuron1.setDependencies(dependenciesAlmost);
 			neuron1.doubleSensor(0);
-			assertNotEquals(dependenciesFull, neuron1.getDependencies());
+			assertEquals(7, neuron1.getDependencies().size());
+            assertEquals(dependenciesAlmost.get(0).getFirst(), neuron1.getDependencies().get(6).getFirst());
+            assertEquals(400, neuron1.getDependencies().get(6).getSecond());
 		}
 		
 	}
@@ -728,8 +758,17 @@ class CoverageTests {
 		@Test
 		public void fromChromosome()
 		{	
-			// nog test zetten
-			NeuralNetwork.fromChromosome(Chromosome.createRandom());
+Chromosome chromosome = Chromosome.createRandom();
+            NeuralNetwork built = NeuralNetwork.fromChromosome(chromosome);
+            for (int output = 0; output < 3; output++) {
+                ActivationFunctionNeuron neuron = built.getOutputNeurons()[output];
+                assertEquals(chromosome.getGene(21 + output), neuron.getBias());
+                assertEquals(7, neuron.getDependencies().size());
+                for (int input = 0; input < 7; input++) {
+                    assertSame(built.getInputNeurons()[input], neuron.getDependencies().get(input).getFirst());
+                    assertEquals(chromosome.getGene(output * 7 + input), neuron.getDependencies().get(input).getSecond());
+                }
+            }
 		}
 	}
 	

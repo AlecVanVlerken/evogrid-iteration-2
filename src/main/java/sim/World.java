@@ -109,7 +109,7 @@ public class World
     /**
      * LEGIT
      * 
-     * Returns true iff pos is 1 (simulation) pixel away from a wall (and inside the world)
+     * Returns true iff pos lies in an outermost row or column of the world.
      *
      * @pre | pos != null
      * @post | result == (isInside(pos) &&

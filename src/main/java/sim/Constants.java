@@ -23,7 +23,8 @@ public class Constants {
 	public static int POPU_SIZE = 350;
 	
 	
-	public final static int DEFAULT_FRAME_RATE = 300;
+	public final static int DEFAULT_FRAME_RATE = 225;
+	public final static int GENERATION_TICKS = 900; // about 4 seconds at the default playback target
 	
 	
 

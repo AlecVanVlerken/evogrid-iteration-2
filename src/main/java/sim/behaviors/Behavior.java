@@ -6,7 +6,7 @@ import sim.World;
 import util.Color;
 
 /**
- * @immutable
+ * Stores an immutable inherited chromosome. Concrete behaviors may expose editable neurons.
  */
 public abstract class Behavior
 {
