@@ -91,6 +91,17 @@ public class Point
         }
     }
 
+    /**
+     * Equal coordinate values have equal hash codes.
+     *
+     * @post | result == 31 * getX() + getY()
+     */
+    @Override
+    public int hashCode()
+    {
+        return 31 * x + y;
+    }
+
     @Override
     public String toString()
     {

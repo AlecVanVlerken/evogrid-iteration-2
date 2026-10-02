@@ -811,10 +811,7 @@ class CoverageTests {
 	        position = new Point(Constants.WSIZE/2, Constants.WSIZE/2);
 	        orientation = new Orientation(0);	        
 	        creatureA = new Creature(behaviorA, position, orientation);
-	        pop = new Creature[3];
-	        for (int i = 0 ; i < 3 ; i ++) {
-	        	pop[i] = creatureA;
-	    	}
+	        pop = new Creature[] {creatureA};
 	    }
 		
 		World world;
@@ -882,10 +879,7 @@ class CoverageTests {
 	        position = new Point(Constants.WSIZE/2, Constants.WSIZE/2);
 	        orientation = new Orientation(0);	        
 	        creatureB = new Creature(behaviorB, position, orientation);
-	        pop = new Creature[3];
-	        for (int i = 0 ; i < 3 ; i ++) {
-	        	pop[i] = creatureB;
-	    	}
+	        pop = new Creature[] {creatureB};
 	    }
 		
 		World world;
@@ -1008,6 +1002,7 @@ class CoverageTests {
 			assertEquals(7, creature.destination(new Vector(1, 0)).getX());						
 		}
 		
+		@Test
 		public void moveForward()
 		{	
 			Creature[] creatures = {new Creature(new BehaviorA(Chromosome.createRandom()), new Point(9,5), Orientation.north())};
@@ -1059,10 +1054,15 @@ class CoverageTests {
 		@Test
 		public void step()
 		{				
-			Creature[] creature = {new Creature(new BehaviorA(Chromosome.createRandom()), new Point(25,25), Orientation.north())};
-			world.step();
-			
-			assertFalse(creature.equals(world.getPopulation()));
+            world = new World(50, 50, new Creature[] {
+                new Creature(new BehaviorB(new Chromosome(new int[Constants.CHROM_SIZE])),
+                        new Point(25, 25), Orientation.north())});
+            Creature[] before = world.getPopulation();
+            world.step();
+            assertEquals(new Point(25, 24), world.getPopulation()[0].getPosition());
+            assertEquals(new Point(25, 25), before[0].getPosition());
+            assertTrue(world.isFree(new Point(25, 25)));
+            assertFalse(world.isFree(new Point(25, 24)));
 		}
 	}
 	

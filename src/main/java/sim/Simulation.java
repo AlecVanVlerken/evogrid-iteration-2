@@ -3,12 +3,12 @@ package sim;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import sim.behaviors.Behavior;
 import sim.behaviors.NeuralNetworkBehavior;
 import sim.naturalselection.NaturalSelection;
 import util.Orientation;
-import util.Pair;
 import util.Point;
 import util.RandomUtil;
 
@@ -53,13 +53,17 @@ public class Simulation
 	}
 
 	/**
-	 * LEGIT
-	 * 
-	 * You may change this function to experiment *but*
-	 * remember to restore this function upon submitting.
-	 * 
+     * Creates a simulation with distinct randomly occupied cells.
+     *
+     * @throws IllegalArgumentException | size <= 0 || populationSize < 0
+     * @throws IllegalArgumentException | populationSize > (long) size * size
+     * @throws IllegalArgumentException | nsel == null
+     * @post | getPopulationSize() == populationSize
+     * @post | getNaturalSelection() == nsel
 	 */
     public Simulation(int size, int populationSize, NaturalSelection nsel) {
+        validateCapacity(size, populationSize);
+        if (nsel == null) { throw new IllegalArgumentException(); }
     	this.populationSize = populationSize;
     	this.world = createInitWorldNeuralnets(size, populationSize);
     	this.nsel = nsel;
@@ -69,29 +73,43 @@ public class Simulation
      * LEGIT
      * 
      * Returns a square World of side `size` with popuSize creatures.
-     * The creatures have Chromosomes as in `chroms` and behaviors as in `behaviors`.
-     * Moreover all creatures have random positions (anywhere within the world) and orientations.
+     * The creatures use the supplied behaviors in array order.
+     * Positions are sampled without replacement and orientations are random.
+     * Empty populations are supported.
      * 
      * @param size is the length of the side of the returned world
      * 
-     * @pre | size > 0
-     * @pre | popuSize > 0
+     * @throws IllegalArgumentException | size <= 0 || popuSize < 0
+     * @throws IllegalArgumentException | popuSize > (long) size * size
      * 
-     * @pre | behaviors != null && behaviors.length == popuSize
-     * @pre | Arrays.stream(behaviors).allMatch(b -> b != null)
+     * @throws IllegalArgumentException | behaviors == null || behaviors.length != popuSize
+     * @throws IllegalArgumentException | Arrays.stream(behaviors).anyMatch(b -> b == null)
      * 
      * @creates | result
      * @post | result != null
      * @post | result.getPopulation().length == popuSize
-     * // post | IntStream.range(0, numA).allMatch(i -> result.getPopulationA()[i].getChromosome().isEqual(chromsA[i]))
-     * // post | Arrays.stream(result.getPopulation()).allMatch(c -> Point.isWithin(c.getPosition().move(new Vector(-size/4, -size/4)), size/2, size/2))
+     * @post | Arrays.stream(result.getPopulation()).map(Creature::getPosition).distinct().count() == popuSize
      */
     public static World createRandWorldWith(int size, int popuSize, Behavior[] behaviors) {
+        validateCapacity(size, popuSize);
+        if (behaviors == null || behaviors.length != popuSize
+                || Arrays.stream(behaviors).anyMatch(b -> b == null)) {
+            throw new IllegalArgumentException();
+        }
         Creature[] pop = new Creature[popuSize];
+        // A sparse partial shuffle samples free cells without retries or a full grid allocation.
+        var remainingCells = new HashMap<Long, Long>();
+        long remaining = (long) size * size;
         
         for (int i = 0 ; i < popuSize ; i ++) {
-          Point position = Point.createRandom(size,size);
-          //Point position = Point.createRandom(size/2, size/2).move(new Vector(size/4, size/4));
+          long index = RandomUtil.integer(remaining);
+          long cell = remainingCells.getOrDefault(index, index);
+          long last = --remaining;
+          if (index != last) {
+              remainingCells.put(index, remainingCells.getOrDefault(last, last));
+          }
+          remainingCells.remove(last);
+          Point position = new Point((int) (cell % size), (int) (cell / size));
       	  Orientation orient = Orientation.createRandom();
       	  var behavior = behaviors[i];
       	  pop[i] = new Creature(behavior, position, orient);
@@ -103,16 +121,31 @@ public class Simulation
 
     	
     /**
-     * LEGIT
+     * Creates a randomly initialized neural population with distinct occupied cells.
+     *
+     * @throws IllegalArgumentException | size <= 0 || popuSize < 0
+     * @throws IllegalArgumentException | popuSize > (long) size * size
+     * @creates | result
+     * @post | result.getPopulation().length == popuSize
      */
     public static World createInitWorldNeuralnets(int size, int popuSize) {
+        validateCapacity(size, popuSize);
     	Behavior[] behaviors = new Behavior[popuSize];
-    	//Behavior[] chooseFrom = {new NeuralNetworkBehavior(Chromosome.createRandom()), new ImmobileBehavior(Chromosome.createRandom()), new BehaviorA(Chromosome.createRandom()), new Behavior(Chromosome.createRandom())};
     	for (int i = 0 ; i < popuSize ; i++) {
     		behaviors[i] = new NeuralNetworkBehavior(Chromosome.createRandom());
-    		//behaviors[i] = new NeuralNetworkBehavior(Chromosome.createRandom());
     	}
     	return createRandWorldWith(size, popuSize, behaviors);
+    }
+
+    /**
+     * Validates dimensions and capacity before allocation or random initialization.
+     *
+     * @throws IllegalArgumentException | size <= 0 || count < 0 || count > (long) size * size
+     */
+    private static void validateCapacity(int size, int count) {
+        if (size <= 0 || count < 0 || count > (long) size * size) {
+            throw new IllegalArgumentException();
+        }
     }
 
     /**

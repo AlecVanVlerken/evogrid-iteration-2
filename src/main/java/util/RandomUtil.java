@@ -28,6 +28,17 @@ public class RandomUtil
         return random.nextInt(max);
     }
 
+    /**
+     * Samples a cell index from a capacity that may exceed the integer range.
+     *
+     * @pre | max > 0
+     * @post | 0 <= result && result < max
+     */
+    public static long integer(long max)
+    {
+        return random.nextLong(max);
+    }
+
     public static int integer(int min, int max)
     {
         return random.nextInt(min, max);

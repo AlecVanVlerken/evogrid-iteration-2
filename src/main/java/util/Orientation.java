@@ -1,6 +1,5 @@
 package util;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -146,9 +145,15 @@ public class Orientation
     }
 
 
+    /**
+     * Returns an unmodifiable catalog of the eight canonical directions.
+     *
+     * @post | result != null && result.size() == 8
+     * @post | result.stream().allMatch(o -> o != null)
+     */
     public static List<Orientation> orientations()
     {
-        return Arrays.asList(orientationTable);
+        return List.of(orientationTable);
     }
 
 

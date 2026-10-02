@@ -12,6 +12,7 @@ import static util.Logic.*;
 public class Chromosome
 {
     /**
+     * @representationObject
      * @invar | weights != null 
      * @invar | weights.length == Constants.CHROM_SIZE
      * @invar | Arrays.stream(weights).allMatch(Chromosome::isValidGene)
@@ -19,6 +20,8 @@ public class Chromosome
     private final int[] weights;
 
     /**
+     * Copies the supplied genes so later changes to the input array cannot alter this chromosome.
+     *
      * @throws IllegalArgumentException | weights == null
      * @throws IllegalArgumentException | weights.length != Constants.CHROM_SIZE
      * @throws IllegalArgumentException | Arrays.stream(weights).anyMatch(g -> !isValidGene(g))
@@ -31,7 +34,7 @@ public class Chromosome
 		if (weights.length != Constants.CHROM_SIZE) { throw new IllegalArgumentException(); }
 		if (Arrays.stream(weights).anyMatch(w -> !isValidGene(w))) { throw new IllegalArgumentException(); }
 	    
-		this.weights = weights;
+		this.weights = weights.clone();
 	}
 
 	/**

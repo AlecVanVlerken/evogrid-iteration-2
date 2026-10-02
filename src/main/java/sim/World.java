@@ -1,6 +1,7 @@
 package sim;
 
 import java.util.Arrays;
+import java.util.HashSet;
 
 import util.Point;
 
@@ -23,6 +24,7 @@ public class World
      * @representationObject
      * @representationObjects
      * @invar | population != null
+     * @invar | Arrays.stream(population).map(Creature::getPosition).distinct().count() == population.length
      * @invar each creature is in the field
      *   | Arrays.stream(population).allMatch(c -> c != null && Point.isWithin(c.getPosition(), width, height))
      */
@@ -30,21 +32,30 @@ public class World
 
 
     /**
-     * Initializes a new World object.
+     * Initializes a world with at most one creature per cell. Empty populations are allowed.
+     * The array and creature state are copied; behavior objects are shared.
      *
      * @inspects | pop
      * @throws IllegalArgumentException | width < 0
      * @throws IllegalArgumentException | height < 0
-     * @throws IllegalArgumentException | pop == null || pop.length < 0
+     * @throws IllegalArgumentException | pop == null
      * @throws IllegalArgumentException | Arrays.stream(pop).anyMatch(c -> c == null)
      * @throws IllegalArgumentException | Arrays.stream(pop).anyMatch(c -> !Point.isWithin(c.getPosition(), width, height))
+     * @throws IllegalArgumentException | Arrays.stream(pop).map(Creature::getPosition).distinct().count() != pop.length
      * @post | this.getWidth() == width
      * @post | this.getHeight() == height
      * @post | areEqualCreatureArrays(pop, getPopulation())
      */
     public World(int width, int height, Creature[] pop)
     {
-    	if (pop == null || pop.length < 0 || width < 0 || height < 0 || Arrays.stream(pop).anyMatch(c -> c == null) || !Arrays.stream(pop).anyMatch(c -> Point.isWithin(c.getPosition(), width, height))) {throw new IllegalArgumentException(); }
+        if (pop == null || width < 0 || height < 0) { throw new IllegalArgumentException(); }
+        var occupied = new HashSet<Point>();
+        for (Creature creature : pop) {
+            if (creature == null || !Point.isWithin(creature.getPosition(), width, height)
+                    || !occupied.add(creature.getPosition())) {
+                throw new IllegalArgumentException();
+            }
+        }
         this.width = width;
         this.height = height;
         this.population = new Creature[pop.length];
@@ -65,8 +76,13 @@ public class World
     public int getHeight() { return this.height; }
 
     /**
-	 * @post | result != null
-	 * @post | Arrays.stream(result).anyMatch(c -> c != null && Point.isWithin(c.getPosition(), getWidth(), getHeight()))
+     * Returns a snapshot with independent creature positions and orientations. Behaviors are shared.
+     *
+     * @creates | result
+     * @post | result != null
+     * @post | result.length == population.length
+	 * @post | Arrays.stream(result).map(Creature::getPosition).distinct().count() == result.length
+	 * @post | Arrays.stream(result).allMatch(c -> c != null && Point.isWithin(c.getPosition(), getWidth(), getHeight()))
 	 */
     public Creature[] getPopulation()
     {
