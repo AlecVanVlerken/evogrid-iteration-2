@@ -9,7 +9,6 @@ import util.Vector;
 
 
 /**
- * @immutable
  * @invar | getColor().equals( Color.GREEN )
  */
 public class NeuralNetworkBehavior extends Behavior	{
@@ -52,7 +51,8 @@ public class NeuralNetworkBehavior extends Behavior	{
 
     @Override
     /**
-     * Applies the specific Behavior of the given Creature in the given the given world.
+     * Decides at every position, including edges, moving before evaluating turning.
+     * Occupied cells and world boundaries still block movement.
      * 
 	 * @inspects | world
 	 * @mutates | creature
@@ -61,10 +61,8 @@ public class NeuralNetworkBehavior extends Behavior	{
 	 */
     public void applyBehavior(World world, Creature creature)
     {
-    	if (!world.isLimPos(creature.getPosition())) {
-    		processForwardMovement(world, creature);
-    		processTurning(world, creature);
-    	}
+        processForwardMovement(world, creature);
+        processTurning(world, creature);
     }
 
     /**

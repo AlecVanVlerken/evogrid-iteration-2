@@ -46,8 +46,8 @@ public class Disjunction implements NaturalSelection
 	}
 	
 	/**
-     * Determines whether a creature survives in the given world at the specified position based on the conjunction of the two areas.
-     * A creature survives if its position is within a certain distance from the the two areas.
+     * Determines whether a creature survives in the given world at the specified position using the OR composition of the two areas.
+     * A creature survives if either area accepts its position.
      * 
      * @inspects | world
      * @inspects | position

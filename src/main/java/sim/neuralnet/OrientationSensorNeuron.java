@@ -10,36 +10,42 @@ import util.Orientation;
  */
 public abstract class OrientationSensorNeuron extends SensorNeuron
 {
+    /**
+     * Senses the heading value, including independently constructed orientations.
+     *
+     * @inspects | world, creature
+     * @pre | world != null && creature != null
+     */
     @Override
     public int computeOutput(World world, Creature creature)
     {
         var orientation = creature.getOrientation();
 
-        if ( orientation == Orientation.north() )
+        if ( orientation.isEqual(Orientation.north()) )
         {
             return this.north();
         }
-        else if ( orientation == Orientation.northEast() )
+        else if ( orientation.isEqual(Orientation.northEast()) )
         {
             return this.northEast();
         }
-        else if ( orientation == Orientation.east() )
+        else if ( orientation.isEqual(Orientation.east()) )
         {
             return this.east();
         }
-        else if ( orientation == Orientation.southEast() )
+        else if ( orientation.isEqual(Orientation.southEast()) )
         {
             return this.southEast();
         }
-        else if ( orientation == Orientation.south() )
+        else if ( orientation.isEqual(Orientation.south()) )
         {
             return this.south();
         }
-        else if ( orientation == Orientation.southWest() )
+        else if ( orientation.isEqual(Orientation.southWest()) )
         {
             return this.southWest();
         }
-        else if ( orientation == Orientation.west() )
+        else if ( orientation.isEqual(Orientation.west()) )
         {
             return this.west();
         }

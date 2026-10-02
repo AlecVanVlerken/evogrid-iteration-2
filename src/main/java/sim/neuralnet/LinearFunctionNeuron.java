@@ -3,7 +3,6 @@ package sim.neuralnet;
 import util.Pair;
 
 /**
- * @immutable
  */
 public class LinearFunctionNeuron extends ActivationFunctionNeuron
 {
@@ -22,7 +21,7 @@ public class LinearFunctionNeuron extends ActivationFunctionNeuron
     
     
     /**
-     * @mutates | getDependencies()
+     * @mutates | this
      * @pre | 0 <= index
      * @pre | index < getDependencies().size()
      * To make a sensor Neuron have more impact on super.computeOutput we can link to it twice (with the same weight)

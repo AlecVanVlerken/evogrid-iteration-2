@@ -352,10 +352,12 @@ class CorrectionTestSuite {
 		void activationFunctionNeuronEncapsIn() {		
 			ArrayList<Pair<Neuron, Integer>> other = neuron.getDependencies();
 
-			other = new ArrayList<>();
-			other.add(new Pair<>(neuron, 500));
-
-			assertNotEquals(other, neuron.getDependencies());
+            other.get(0).setSecond(100);
+            other.clear();
+            dependencies.get(0).setSecond(200);
+            dependencies.clear();
+            assertEquals(7, neuron.getDependencies().size());
+            assertEquals(500, neuron.getDependencies().get(0).getSecond());
 		}
 	}
 	
@@ -452,7 +454,11 @@ class CorrectionTestSuite {
 			neuron.setDependencies(dependenciesFull);
 			
 			assertFalse(neuron.connect(neuron, 500));
-			assertEquals(dependenciesFull, neuron.getDependencies());
+			assertEquals(dependenciesFull.size(), neuron.getDependencies().size());
+            for (int i = 0; i < dependenciesFull.size(); i++) {
+                assertEquals(dependenciesFull.get(i).getFirst(), neuron.getDependencies().get(i).getFirst());
+                assertEquals(dependenciesFull.get(i).getSecond(), neuron.getDependencies().get(i).getSecond());
+            }
 		}
 		
 		@Test
@@ -481,7 +487,11 @@ class CorrectionTestSuite {
 			
 			neuron1.setDependencies(dependenciesFull);
 			neuron1.doubleSensor(0);
-			assertEquals(dependenciesFull, neuron1.getDependencies());
+			assertEquals(dependenciesFull.size(), neuron1.getDependencies().size());
+            for (int i = 0; i < dependenciesFull.size(); i++) {
+                assertEquals(dependenciesFull.get(i).getFirst(), neuron1.getDependencies().get(i).getFirst());
+                assertEquals(dependenciesFull.get(i).getSecond(), neuron1.getDependencies().get(i).getSecond());
+            }
 			
 			neuron1.setDependencies(dependenciesAlmost);
 			neuron1.doubleSensor(0);

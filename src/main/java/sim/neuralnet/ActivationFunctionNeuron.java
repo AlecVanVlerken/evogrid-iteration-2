@@ -19,6 +19,8 @@ public abstract class ActivationFunctionNeuron implements Neuron
 	 * @representationObjects
 	 * 
 	 * @invar | dependencies != null
+	 * @invar | dependencies.size() <= 7
+	 * @invar | dependencies.stream().allMatch(p -> p != null && p.getFirst() != null && p.getSecond() != null)
 	 *
 	 */
     private ArrayList<Pair<Neuron, Integer>> dependencies;
@@ -29,19 +31,48 @@ public abstract class ActivationFunctionNeuron implements Neuron
     private int bias;
 
     /**
+     * Returns a snapshot of the connections, copying the list and pairs but sharing neurons.
+     *
+     * @creates | result
      * @post | result != null
+     * @post | result.size() == dependencies.size()
      */
     public ArrayList<Pair<Neuron, Integer>> getDependencies() {
-    	return dependencies;
+        return copyDependencies(dependencies);
     }
     
     /**
-     * @pre | deps.size() <= 7
-     * @pre | deps.stream().allMatch(pair -> pair != null)
-     * @post | this.getDependencies() == deps
+     * Copies connection containers while retaining editable neuron references.
+     *
+     * @inspects | deps
+     * @throws IllegalArgumentException | deps == null || deps.size() > 7
+     * @throws IllegalArgumentException | deps.stream().anyMatch(p -> p == null || p.getFirst() == null || p.getSecond() == null)
+     * @post | getDependencies().size() == deps.size()
+     * @post | java.util.stream.IntStream.range(0, deps.size()).allMatch(i ->
+     *       | getDependencies().get(i).getFirst() == deps.get(i).getFirst() &&
+     *       | getDependencies().get(i).getSecond().equals(deps.get(i).getSecond()))
      */
     public void setDependencies(ArrayList<Pair<Neuron, Integer>> deps) {
-    	dependencies = deps;
+        if (deps == null || deps.size() > 7 || deps.stream().anyMatch(p ->
+                p == null || p.getFirst() == null || p.getSecond() == null)) {
+            throw new IllegalArgumentException();
+        }
+        dependencies = copyDependencies(deps);
+    }
+
+    /**
+     * Copies connection structure without copying the referenced neurons.
+     *
+     * @pre | deps != null
+     * @creates | result
+     * @post | result.size() == deps.size()
+     */
+    private static ArrayList<Pair<Neuron, Integer>> copyDependencies(ArrayList<Pair<Neuron, Integer>> deps) {
+        var copy = new ArrayList<Pair<Neuron, Integer>>();
+        for (var pair : deps) {
+            copy.add(new Pair<>(pair.getFirst(), pair.getSecond()));
+        }
+        return copy;
     }
 
     /**
@@ -58,6 +89,8 @@ public abstract class ActivationFunctionNeuron implements Neuron
 
     /**
      * If the connection should fail, do nothing and return false
+     *
+     * @pre | dependency != null
      */
     public boolean connect(Neuron dependency, int weight)
     {
@@ -93,7 +126,7 @@ public abstract class ActivationFunctionNeuron implements Neuron
     public int computeOutput(World world, Creature creature)
     {
     	int total = 0;
-    	for (Pair<Neuron, Integer> pair : this.getDependencies()) {
+        for (Pair<Neuron, Integer> pair : this.dependencies) {
     		total += (pair.getFirst().computeOutput(world, creature) * pair.getSecond())/1000;
 	    }
     	total += this.getBias();

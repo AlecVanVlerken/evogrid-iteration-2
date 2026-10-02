@@ -9,9 +9,8 @@ import util.Pair;
 
 /**
  * Output neurons depend at least on all input neurons, if they depend on something.
- * All Neuron fields are freely accessible by the client.
+ * Arrays are snapshots; the neuron references remain freely accessible and editable.
  * 
- * @immutable
  */
 public class NeuralNetwork
 {
@@ -69,15 +68,21 @@ public class NeuralNetwork
 
 
     /**
+     * Returns a new array containing the existing sensor references.
+     *
+     * @creates | result
      * @post | result.length == 7
      * @post | Arrays.stream(result).allMatch(neuron -> neuron != null)
      */
 	public SensorNeuron[] getInputNeurons()
     {
-        return inputLayerNeurons;
+        return inputLayerNeurons.clone();
     }
 
 	/**
+     * Returns a new array containing the editable output neurons in chromosome order.
+     *
+     * @creates | result
      * @post | result.length == 3
      * @post | Arrays.stream(result).allMatch(neuron -> neuron != null)
      */

@@ -1,6 +1,7 @@
 package other;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -442,7 +443,11 @@ class CoverageTests {
 			}
 			neuron1.setDependencies(dependenciesFull);
 			neuron1.doubleSensor(0);
-			assertEquals(dependenciesFull, neuron1.getDependencies());
+			assertEquals(dependenciesFull.size(), neuron1.getDependencies().size());
+            for (int i = 0; i < dependenciesFull.size(); i++) {
+                assertEquals(dependenciesFull.get(i).getFirst(), neuron1.getDependencies().get(i).getFirst());
+                assertEquals(dependenciesFull.get(i).getSecond(), neuron1.getDependencies().get(i).getSecond());
+            }
 			
 			neuron1.setDependencies(dependenciesAlmost);
 			neuron1.doubleSensor(0);
@@ -656,7 +661,11 @@ class CoverageTests {
 				dependencies.add(new Pair<>(neuron, 500));
 				}
 			neuron.setDependencies(dependencies);
-			assertEquals(dependencies, neuron.getDependencies());
+			assertEquals(dependencies.size(), neuron.getDependencies().size());
+            for (int i = 0; i < dependencies.size(); i++) {
+                assertEquals(dependencies.get(i).getFirst(), neuron.getDependencies().get(i).getFirst());
+                assertEquals(dependencies.get(i).getSecond(), neuron.getDependencies().get(i).getSecond());
+            }
 		}
 		
 		@Test
@@ -679,7 +688,11 @@ class CoverageTests {
 			neuron.setDependencies(dependenciesFull);
 			
 			assertFalse(neuron.connect(neuron, 500));
-			assertEquals(dependenciesFull, neuron.getDependencies());
+			assertEquals(dependenciesFull.size(), neuron.getDependencies().size());
+            for (int i = 0; i < dependenciesFull.size(); i++) {
+                assertEquals(dependenciesFull.get(i).getFirst(), neuron.getDependencies().get(i).getFirst());
+                assertEquals(dependenciesFull.get(i).getSecond(), neuron.getDependencies().get(i).getSecond());
+            }
 		}
 	}
 	
@@ -699,7 +712,7 @@ class CoverageTests {
 		public void getters()
 		{	
 			SensorNeuron[] inputLayerNeurons = network.getInputNeurons();
-			assertEquals(inputLayerNeurons, network.getInputNeurons());
+			assertArrayEquals(inputLayerNeurons, network.getInputNeurons());
 			
 			ActivationFunctionNeuron moveForwardNeuron = network.getMoveForwardNeuron();
 			ActivationFunctionNeuron turnClockwiseNeuron = network.getTurnClockwiseNeuron();
@@ -833,26 +846,25 @@ class CoverageTests {
 		
 		@Test
 	    void testApplyBehavior_NotLimAndNotFreePath() {
-			
-			Creature creatureAObstacle = new Creature(behaviorA, position, orientation);
-			pop[0] = creatureAObstacle;
-			behaviorA.applyBehavior(world, creatureAObstacle);
-	        Point initialPosition = creatureA.getPosition();
-	        Orientation initialOrientation = creatureA.getOrientation();
-	        behaviorA.applyBehavior(world, creatureA);
-	        assertNotEquals(creatureA.getPosition(), initialPosition);
-	        assertEquals(creatureA.getOrientation(), initialOrientation);
-	    }
+            Point destination = creatureA.destination(new Vector(-1, -1));
+            Creature obstacle = new Creature(new ImmobileBehavior(chrom), destination, Orientation.north());
+            world = new World(Constants.WSIZE, Constants.WSIZE, new Creature[] {creatureA, obstacle});
+            world.step();
+            Creature result = world.getPopulation()[0];
+            assertEquals(position, result.getPosition());
+            assertFalse(orientation.isEqual(result.getOrientation()));
+            assertEquals(destination, world.getPopulation()[1].getPosition());
+        }
 
 	    @Test
 	    void testApplyBehavior_Lim() {
 
-	    	creatureA = new Creature(behaviorA, new Point(1, 1), orientation);
+            creatureA = new Creature(behaviorA, new Point(0, 1), orientation);
 	        Point initialPosition = creatureA.getPosition();
 	        Orientation initialOrientation = creatureA.getOrientation();
 	        behaviorA.applyBehavior(world, creatureA);
 	        assertEquals(creatureA.getPosition(), initialPosition);
-	        assertNotEquals(creatureA.getOrientation(), initialOrientation);
+	        assertEquals(creatureA.getOrientation(), initialOrientation);
 	    }
 	}
 	
@@ -875,7 +887,7 @@ class CoverageTests {
 	        	weights[i] = Constants.GENE_MAX;
 	    	}
 	    	chrom = new Chromosome(weights);
-	        behaviorB = new BehaviorA(chrom);
+	        behaviorB = new BehaviorB(chrom);
 	        position = new Point(Constants.WSIZE/2, Constants.WSIZE/2);
 	        orientation = new Orientation(0);	        
 	        creatureB = new Creature(behaviorB, position, orientation);
@@ -901,26 +913,25 @@ class CoverageTests {
 		
 		@Test
 	    void testApplyBehavior_NotLimAndNotFreePath() {
-			
-			Creature creatureAObstacle = new Creature(behaviorB, position, orientation);
-			pop[0] = creatureAObstacle;
-			behaviorB.applyBehavior(world, creatureAObstacle);
-	        Point initialPosition = creatureB.getPosition();
-	        Orientation initialOrientation = creatureB.getOrientation();
-	        behaviorB.applyBehavior(world, creatureB);
-	        assertNotEquals(creatureB.getPosition(), initialPosition);
-	        assertEquals(creatureB.getOrientation(), initialOrientation);
-	    }
+            Point destination = creatureB.destination(new Vector(0, 0));
+            Creature obstacle = new Creature(new ImmobileBehavior(chrom), destination, Orientation.north());
+            world = new World(Constants.WSIZE, Constants.WSIZE, new Creature[] {creatureB, obstacle});
+            world.step();
+            Creature result = world.getPopulation()[0];
+            assertEquals(position, result.getPosition());
+            assertFalse(orientation.isEqual(result.getOrientation()));
+            assertEquals(destination, world.getPopulation()[1].getPosition());
+        }
 
 	    @Test
 	    void testApplyBehavior_Lim() {
 
-	    	creatureB = new Creature(behaviorB, new Point(1, 1), orientation);
+            creatureB = new Creature(behaviorB, new Point(0, 1), orientation);
 	        Point initialPosition = creatureB.getPosition();
 	        Orientation initialOrientation = creatureB.getOrientation();
 	        behaviorB.applyBehavior(world, creatureB);
 	        assertEquals(creatureB.getPosition(), initialPosition);
-	        assertNotEquals(creatureB.getOrientation(), initialOrientation);
+	        assertEquals(creatureB.getOrientation(), initialOrientation);
 	    }
 	}
 	

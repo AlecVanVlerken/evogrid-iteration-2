@@ -36,14 +36,14 @@ public class FreePassageSensorNeuron extends BinarySensorNeuron
 
     @Override
     /**
-     * Detects if the space is free in the given Orientations north, northwest and northeast from the creaturs point of view.
+     * Detects a free cell ahead or one eighth-turn left or right relative to the heading.
+     * Out-of-bounds cells and occupied cells are blocked.
      * 
      * @inspects | world
      * @inspects | creature
      * @pre | world != null
      * @pre | creature != null
      */
-     //@post | result == (((getOrientation().isEqual(Orientation.north())) && (world.isFree(creature.getPosition().move(creature.getOrientation().toVector())))) || ((getOrientation().isEqual(Orientation.northWest())) && (world.isFree(creature.getPosition().move(creature.getOrientation().toVector()).move(Orientation.northWest().toVector())))) || ((getOrientation().isEqual(Orientation.northEast())) && (world.isFree(creature.getPosition().move(creature.getOrientation().toVector()).move(Orientation.northEast().toVector())))))
     public boolean detect(World world, Creature creature)
     {
     	Creature dummy_creature = creature.giveCopy();

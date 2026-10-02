@@ -35,17 +35,18 @@ public class BorderHabitableZone implements NaturalSelection
     @Override
     /**
     * Determines whether a creature survives in the given world at the specified position based on the border size.
-    * A creature survives if its position is within a certain distance from the border of the world.
+    * Each edge strip contains exactly borderSize cells unless strips overlap.
+    * A zero-sized border selects no cells; sufficiently large borders select the entire world.
     * 
     * @inspects | world
     * @inspects | position
     * @pre | Point.isWithin(position, world.getWidth(), world.getHeight())
     * @pre | world != null && position != null
-    * @post | result == getBorderSize() > position.getX() || position.getX() > world.getWidth() - getBorderSize() || getBorderSize() > position.getY() || position.getY() > world.getHeight() - getBorderSize()
+    * @post | result == getBorderSize() > position.getX() || position.getX() >= world.getWidth() - getBorderSize() || getBorderSize() > position.getY() || position.getY() >= world.getHeight() - getBorderSize()
     */
     public boolean survives(World world, Point position)
     {
-        if ((borderSize > position.getX() || position.getX() > world.getWidth() - borderSize || borderSize > position.getY() || position.getY() > world.getHeight() - borderSize)) {
+        if ((borderSize > position.getX() || position.getX() >= world.getWidth() - borderSize || borderSize > position.getY() || position.getY() >= world.getHeight() - borderSize)) {
         	return true;
         }
     	return false;
